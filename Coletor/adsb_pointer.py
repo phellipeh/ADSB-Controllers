@@ -8,9 +8,6 @@ ip_servidor = 'localhost'
 porta_servidor = 5000
 status_conec_serv = False
 
-def ADSBDataDecoder(data):
-    pass
-
 #Inicia Serial
 try:
     s_com = serial.Serial('/dev/ttyS1', 19200)
@@ -43,11 +40,12 @@ except:
 while true:
     line = s_com.readline()
     if status_conec_serv == True:
-        client_socket.send(ADSBDataDecoder(line))
+#############Formatar os Dados############# em json
+        client_socket.send(line)
     else:
         #Armazena os dados no Bando de Dados
 
-#############Inserir os Dados#############   com ADSBDataDecoder(line)
+#############Inserir os Dados#############   
         
         cur.execute("CREATE TABLE IF NOT EXISTS "+data[0]+"(Id integer primary key autoincrement, Data TEXT, Time TEXT, Date TEXT);")
         cur.execute("INSERT INTO "+data[0]+" (Data, Time, Date) VALUES('"+data[1]+"', '"+hr+"', '"+hj+"')")
@@ -61,7 +59,7 @@ while true:
             #Envia todos os dados Armazenados Localmente
             print "Conectado ao Servidor..."
 
-#############Enviar os Dados############# com ADSBDataDecoder(line)
+#############Enviar os Dados############# em json
             
             print "Todos os dados armazenados localmente foram enviados"
         except:
