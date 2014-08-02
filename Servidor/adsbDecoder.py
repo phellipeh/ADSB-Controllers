@@ -30,17 +30,18 @@ def ADSBDataDecoder(data):
         bin_adsb_packet = c(hex_adsb_packet[0],hex_adsb_packet[1])+c(hex_adsb_packet[2],hex_adsb_packet[3])+c(hex_adsb_packet[4],hex_adsb_packet[5])+c(hex_adsb_packet[6],hex_adsb_packet[7])+c(hex_adsb_packet[8],hex_adsb_packet[9])+c(hex_adsb_packet[10],hex_adsb_packet[11])
 
         Altitude = eval("0b" + bin_adsb_packet[:12])
-        '''Latitude = eval("0b" + Latitude)
-        Longitude =  eval("0b" + Longitude)
-'''
-        print "Altitude: " + str(Altitude)
-        print "(Dec) Latitude:  " + str(Latitude)
-        print "(Dec) Longitude: " + str(Longitude)
-
-    
-
-
+        Latitude = eval("0b" + bin_adsb_packet[14:][:17])
+        Longitude =  eval("0b" + bin_adsb_packet[31:][:17])
+        T = bin_adsb_packet[:13][:1]
+        F = bin_adsb_packet[:14][:1]
         
+        print "T: "+T
+        print "F: "+F
+        print "Altitude: " + str(Altitude)
+        print "Latitude:  " + str(Latitude)
+        print "Longitude: " + str(Longitude)
+
+        #return 
     elif b_TC == "10011":
         print "Airborne Velocity message"
 
