@@ -1,16 +1,25 @@
+#
+# Python HTTP/DataStreaming Server 
+# Felipe Sousa Rocha, 1/8/2014
+#
+
+#
+# TODO LIST
+# - Identificar o que o servidor pode mandar
+# - Criar prototipo do Streaming
+#   - Conectar ao banco de Dados
+#   - Codificar em JSON
+#   - Definir Cabecalho JSON        OK
+#
+
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from SocketServer import ThreadingMixIn
 import threading
 import cgi
 import urlparse
 
-HTTPHost = 'localhost' # !!!REMEMBER TO CHANGE THIS!!!
-HTTPPort = 8080 # Maybe set this to 9000.
-
-
-#httpserverstart
-
-#httpdatasendhttppage
+HTTPHost = 'localhost'
+HTTPPort = 80
 
 class Handler(BaseHTTPRequestHandler):
     
@@ -26,10 +35,6 @@ class Handler(BaseHTTPRequestHandler):
         # Begin the response
         self.send_response(200)
         self.end_headers()
-        #self.wfile.write('Client: %s\n' % str(self.client_address))
-        #self.wfile.write('User-agent: %s\n' % str(self.headers['user-agent']))
-        #self.wfile.write('Path: %s\n' % self.path)
-        #self.wfile.write('Form data:\n')
         
         # Echo back information about what was posted in the form
         for field in form.keys():
@@ -47,7 +52,6 @@ class Handler(BaseHTTPRequestHandler):
 
                 if field == "voice_input":
                    pass
-                
         return
 
     def do_GET(self):
@@ -93,6 +97,9 @@ class Handler(BaseHTTPRequestHandler):
         if ".jpg" in self.path: 
             self.wfile.write("Content-Type: image/jpg\r\n\r\n")
 
+        if self.path == "/update":
+            self.wfile.write("Content-Type: application/json\r\n\r\n")
+
         self.end_headers()
         arq = self.path
         messagez = ""
@@ -104,8 +111,11 @@ class Handler(BaseHTTPRequestHandler):
 
         if self.path == "/update":
                 self.wfile.write('Update')
+                #Obtem todos os Dados Recentes Registrados no banco
+               
         if self.path == "/":
-                self.wfile.write('Main')
+            sfile = open("./index.html", "r")
+            messagez = sfile.read()
         
         try:
             sfile = open("."+arq, "r")
@@ -123,5 +133,3 @@ if __name__ == '__main__':
     server = ThreadedHTTPServer((HTTPHost, HTTPPort), Handler)
     print 'Iniciando, use <Ctrl-C> to stop'
     server.serve_forever()
-
-#httpDataStreaming

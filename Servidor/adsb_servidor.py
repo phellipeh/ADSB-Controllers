@@ -1,3 +1,8 @@
+
+#
+# TODO LIST
+# - Fatiar os Dados em JSON e armazenar no Banco de Dados
+
 import sockets
 import sqlite3
 import threading

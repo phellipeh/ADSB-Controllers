@@ -1,3 +1,10 @@
+#
+# TODO LIST
+# - Formatar os Dados em json (para streaming)
+# - Inserir os Dados (no cache)
+# - Enviar os Dados em json (do Cache)
+#
+
 import sys
 import socket
 import sqlite3 as sql

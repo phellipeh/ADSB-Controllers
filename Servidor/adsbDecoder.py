@@ -3,6 +3,15 @@
 # Felipe Sousa Rocha, 1/8/2024
 #
 
+#
+# TODO LIST
+# - Calculo da Latitude
+# - Calculo da Longitude
+# - Identificar outros extended squitter packets
+# - Identificar Velocidade e Direcao da Aeronave
+# - Identificar Nome do Voo
+# - Identificar Funcoes do ICAO, DF, CA
+
 def toHex(x):
     return hex(eval("0x" + x))
 
@@ -41,10 +50,7 @@ def ADSBDataDecoder(data):
         print "Latitude:  " + str(Latitude)
         print "Longitude: " + str(Longitude)
 
-        #return 
     elif b_TC == "10011":
         print "Airborne Velocity message"
 
-    
-    
 ADSBDataDecoder("8d4008f15837f237ebe3a3")
