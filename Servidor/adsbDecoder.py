@@ -38,8 +38,18 @@ def ADSBParity(P, ICAO):
    # PI = ICAO[24]+ICAO[23]+ICAO[22]+ICAO[21]+ICAO[20]+ICAO[19]+ICAO[18]+ICAO[17]+ICAO[16]+ICAO[15]+ICAO[14]+ICAO[13]+ICAO[10]+ICAO[3]+1
    pass
 
+Airplanes = [
+        ["ICAO", "Lat0", "Lat1", "Long0", "Long1", "Alt", "UTF"]
+    ]
 
-    
+def findICAOExists(ICAO):
+    retorno = False
+    for x in range(0, len(Airplanes)):
+        if Airplanes[x][0] == ICAO:
+            retorno = True
+        else:
+            retorno = False
+    return retorno, x
 
 def ADSBDataDecoder(data):
     ICAO = data[2]+data[3]+data[4]+data[5]+data[6]+data[7]
@@ -61,23 +71,40 @@ def ADSBDataDecoder(data):
             print "Airborne Position message... Obtendo Dados (Altitude, Latitude e Longitude)"
             hex_adsb_packet = data[8:]
             bin_adsb_packet = c(hex_adsb_packet[0],hex_adsb_packet[1])+c(hex_adsb_packet[2],hex_adsb_packet[3])+c(hex_adsb_packet[4],hex_adsb_packet[5])+c(hex_adsb_packet[6],hex_adsb_packet[7])+c(hex_adsb_packet[8],hex_adsb_packet[9])+c(hex_adsb_packet[10],hex_adsb_packet[11])+c(hex_adsb_packet[12],hex_adsb_packet[13])
-
             Altitude = "0b" + bin_adsb_packet[8:][:12]
             Latitude = eval("0b" + bin_adsb_packet[22:][:17])            
             Longitude =  eval("0b" + bin_adsb_packet[-17:])
-
             T = bin_adsb_packet[20:][0]
             F = bin_adsb_packet[21:][0]
 
-            if T == '1':
-                print "UTC Syncronized"
+            status, a_id = findICAOExists(ICAO)
             
+            if status == False:
+                Airplanes.append([ICAO, "NULL", "NULL", "NULL", "NULL", "NULL", T])
+                a_id = len(Airplanes)-1
+                print "Novo Airplane Criado " + str(a_id)
+    
             if F == '0':
                 print "Even Packet"
+                Airplanes[a_id][1] = Latitude
+                Airplanes[a_id][3] = Longitude
+                Airplanes[a_id][5] = Altitude
+                print "Atualizado Lat0 e Long0"
+                #Atualiza dados em ICAO, 0
             elif F == '1':
                 print "Odd Packet"
+                Airplanes[a_id][2] = Latitude
+                Airplanes[a_id][4] = Longitude
+                Airplanes[a_id][5] = Altitude
+                print "Atualizado Lat1 e Long1"
+                #Atualiza dados em ICAO, 1
 
             print "ICAO Hex Address: " + ICAO
+
+            #verifica exitencia dos dois dados e calcula rota
+            if Airplanes[a_id][1] != "NULL" and Airplanes[a_id][2] != "NULL" and Airplanes[a_id][3] != "NULL" and Airplanes[a_id][4] != "NULL":
+                print "Ja possui dados suficientes para calcular rota"
+            
             print "(nao calculado)  Altitude: " + str(Altitude)
             print "(nao calculado)  Latitude: " + str(Latitude)
             print "(nao calculado) Longitude: " + str(Longitude)
