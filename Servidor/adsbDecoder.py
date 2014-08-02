@@ -3,6 +3,8 @@
 # Felipe Sousa Rocha, 1/8/2024
 #
 
+import math
+
 #
 # TODO LIST
 # - Calculo da Latitude
@@ -28,6 +30,9 @@ def full_bit_zero(data):
 def c(d1, d2):
     return full_bit_zero(bin(eval(toHex(d1+d2))))
 
+def mod(a, b):
+    return a % b
+
 def ADSBDataDecoder(data):
     DFCA = toHex(data[:2])                                                      #Primeiro Byte para DF+CA
     ICAO = "0x"+data[2]+data[3]+" 0x"+data[4]+data[5]+" 0x"+data[6]+data[7]     #Tres bytes para ICAO
@@ -45,10 +50,17 @@ def ADSBDataDecoder(data):
         F = bin_adsb_packet[:14][:1]
         
         print "T: "+T
-        print "F: "+F
-        print "Altitude: " + str(Altitude)
-        print "Latitude:  " + str(Latitude)
-        print "Longitude: " + str(Longitude)
+        
+        if F == '0':
+            print "Even Packet"
+        elif F == '1':
+            print "Odd Packet"
+        
+        print "(nao calculado)  Altitude: " + str(Altitude)
+        print "(nao calculado)  Latitude: " + str(Latitude)
+        print "(nao calculado) Longitude: " + str(Longitude)
+
+        math.floor(((59 * Lat(0) - 60 * Lat(1)) / 131072) + 0.5)
 
     elif b_TC == "10011":
         print "Airborne Velocity message"

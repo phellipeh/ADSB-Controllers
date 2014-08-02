@@ -56,32 +56,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed_path = urlparse.urlparse(self.path)
-        '''message_parts = [
-                'CLIENT VALUES:',
-                'client_address=%s (%s)' % (self.client_address,
-                                            self.address_string()),
-                'command=%s' % self.command,
-                'path=%s' % self.path,
-                'real path=%s' % parsed_path.path,
-                'query=%s' % parsed_path.query,
-                'request_version=%s' % self.request_version,
-                '',
-                'SERVER VALUES:',
-                'server_version=%s' % self.server_version,
-                'sys_version=%s' % self.sys_version,
-                'protocol_version=%s' % self.protocol_version,
-                '',
-                'HEADERS RECEIVED:',
-                ]
-        for name, value in sorted(self.headers.items()):
-            message_parts.append('%s=%s' % (name, value.rstrip()))
-        message_parts.append('')
-        message = '\r\n'.join(message_parts)
-        '''
-        #self.send_response(200, "Content-Type: text/html")
         self.wfile.write('HTTP/1.0 200 OK\r\n')
-
-
         if ".html" in self.path: 
             self.wfile.write("Content-Type: text/html\r\n\r\n")
 
@@ -110,8 +85,9 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write('Form data:\n')
 
         if self.path == "/update":
-                self.wfile.write('Update')
-                #Obtem todos os Dados Recentes Registrados no banco
+                
+            self.wfile.write('Update')
+            #Obtem todos os Dados Recentes Registrados no banco
                
         if self.path == "/":
             sfile = open("./index.html", "r")
