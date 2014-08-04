@@ -10,11 +10,15 @@ $(document).ready(function(){
 	
 	$('#sidr-trigger').sidr();
 	
+	
+	/* Esta parte é a do websocket, substituir pela JSON GET Request */
 	var wsUri = "ws://" + document.location.host + "/Radar-Livre/websocket";
 	var websocket = new WebSocket(wsUri);
 	
 	websocket.onopen = function(event) { onOpen(event); };
 	websocket.onmessage = function(event) { onMessage(event); };
+	/*****************************************************************/
+	
 	
 	var timer = setInterval(function(){myTimer();},20000);
 

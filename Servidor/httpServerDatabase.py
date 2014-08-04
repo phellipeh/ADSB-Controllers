@@ -4,7 +4,6 @@ try:
     con = sql.connect('ServerDataBase.db')
     try:
         cur = con.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS HexDataBase (Hex TEXT, Lat TEXT, Lon TEXT, Alt TEXT, Timestamp TEXT);")
         con.commit()
     except sql.OperationalError, msg:
         print msg
