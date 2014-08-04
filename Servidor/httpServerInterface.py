@@ -5,10 +5,10 @@
 
 #
 # TODO LIST
-# - Identificar o que o servidor pode mandar
-# - Criar prototipo do Streaming
-#   - Conectar ao banco de Dados
-#   - Codificar em JSON
+# - Identificar o que o servidor pode mandar OK
+# - Criar prototipo do Streaming    OK
+#   - Conectar ao banco de Dados    OK
+#   - Codificar em JSON             OK
 #   - Definir Cabecalho JSON        OK
 #
 
@@ -17,6 +17,7 @@ from SocketServer import ThreadingMixIn
 import threading
 import cgi
 import urlparse
+import httpServerDatabase
 
 HTTPHost = 'localhost'
 HTTPPort = 80
@@ -57,17 +58,17 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed_path = urlparse.urlparse(self.path)
         self.wfile.write('HTTP/1.0 200 OK\r\n')
-        if ".html" in self.path: 
+        if ".html" in self.path or self.path == "/": 
             self.wfile.write("Content-Type: text/html\r\n\r\n")
 
         if ".js" in self.path: 
-            self.wfile.write("Content-Type: text/html\r\n\r\n")
+            self.wfile.write("Content-Type: text/javascript\r\n\r\n")
 
         if ".css" in self.path: 
-            self.wfile.write("Content-Type: text/html\r\n\r\n")
+            self.wfile.write("Content-Type: text/css\r\n\r\n")
 
         if ".png" in self.path: 
-            self.wfile.write("Content-Type: text/html\r\n\r\n")
+            self.wfile.write("Content-Type: image/png\r\n\r\n")
 
         if ".jpg" in self.path: 
             self.wfile.write("Content-Type: image/jpg\r\n\r\n")
@@ -79,22 +80,20 @@ class Handler(BaseHTTPRequestHandler):
         arq = self.path
         messagez = ""
 
-        self.wfile.write('Client: %s\n' % str(self.client_address))
+        '''self.wfile.write('Client: %s\n' % str(self.client_address))
         self.wfile.write('User-agent: %s\n' % str(self.headers['user-agent']))
         self.wfile.write('Path: %s\n' % self.path)
-        self.wfile.write('Form data:\n')
+        self.wfile.write('Form data:\n')'''
 
         if self.path == "/update":
-                
-            self.wfile.write('Update')
-            #Obtem todos os Dados Recentes Registrados no banco
+            self.wfile.write(httpServerDatabase.GetRealtimeAirplaneList())
                
         if self.path == "/":
-            sfile = open("./index.html", "r")
+            sfile = open("./webApp/index.html", "r")
             messagez = sfile.read()
         
         try:
-            sfile = open("."+arq, "r")
+            sfile = open("./webApp/"+arq, "r")
             messagez = sfile.read()
         except Exception:
             message="nao achou: "+arq + " " + str(Exception)

@@ -42,13 +42,6 @@ def SalvaHex(HexData):
     cur.execute("INSERT INTO HexDataBase (Hex, DateTime) VALUES('"+HexData+"', '"+str(datetime_)+"')")
     con.commit()
 
-def RecuperaHex():
-    cur.execute("SELECT * FROM HexDataBase")
-    con.commit()
-    recs = cur.fetchall()
-    rows = [ dict(rec) for rec in recs ]
-    return json.dumps(rows)
-
 def LimpaHex():
     cur.execute("DELETE * FROM HexDataBase ")
     con.commit()
@@ -82,8 +75,15 @@ while True:
             status_conec_serv = True
             #Envia todos os dados Armazenados Localmente
             print "Conectado ao Servidor..."
-            client_socket.send(RecuperaHex())
+
+            cur.execute("SELECT * FROM HexDataBase")
+            con.commit()
+            recs = cur.fetchall()
+            for rec in recs
+                client_socket.send(json.dumps(rec))
+
             LimpaHex()
+            
             print "Todos os dados armazenados localmente foram enviados"
         except:
             print "Dados Armazenados Localmente.. Ainda nao foi possivel conexao com o servidor..."

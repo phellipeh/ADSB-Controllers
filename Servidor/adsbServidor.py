@@ -4,29 +4,14 @@
 # - Fatiar os Dados em JSON e armazenar no Banco de Dados
 
 import sockets
-import sqlite3
+import sqlite3 as sql
 import threading
 import sys
+import adsbDecoder
 
 host = "localhost"
 port = 3000
 limit = 10
-
-def InsertOnDatabase(data):
-#############Fatiar os Dados em JSON e armazenar no Banco de Dados#############
-    pass
-
-#Banco de Dados
-try:
-    con = sql.connect('ServerDataBase.db')
-    try:
-        cur = con.cursor()
-    except sql.OperationalError, msg:
-        print msg
-        return "return: Erro ao inserir os dados no banco de dados."
-except:
-    print "Nao Foi Possivel conectar-se ao Banco de Dados Local..."
-    sys.exit(0)
 
 #Socket Server
 print "Iniciando Socket Server... ",
@@ -41,8 +26,8 @@ except Exception:
 
 def clientthread(conn):
     while True:
-        t=conn.recv(1024)
-        InsertOnDatabase(t)
+        data=conn.recv(4096)
+        ADSBDataDecoder(data) #retorna hex, alt, lat, e lon, (velocidade, nome, angulo)
         
 #Socket server
 while True:

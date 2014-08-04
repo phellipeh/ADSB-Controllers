@@ -4,16 +4,15 @@
 #
 
 import math
+import adsbDecoderDatabase
+import adsbDecoderMathAndDataLibrary
 
 #
 # TODO LIST
-# - Calculo da Latitude                             Vai para o WebClient
-# - Calculo da Longitude                            Vai para o WebClient
-# - Identificar outros extended squitter packets    OK
-# - Identificar Velocidade e Direcao da Aeronave    Cancel
-# - Identificar Nome do Voo                         Cancel
-# - Identificar Funcoes do ICAO, DF, CA             OK
+# - Identificar Velocidade e Direcao da Aeronave    
+# - Identificar Nome do Voo
 # - Verificar Paridade
+#
 
 def toHex(x):
     return hex(eval("0x" + x))
@@ -159,21 +158,13 @@ def NL(lat):
 	else:
 		return 1
 
-Airplanes = [
-        ["ICAO", "Lat0", "Lat1", "Long0", "Long1", "Alt", "UTF"]
-    ]
-
-def findICAOExists(ICAO):
-    retorno = False
-    for x in range(0, len(Airplanes)):
-        if Airplanes[x][0] == ICAO:
-            retorno = True
-        else:
-            retorno = False
-    return retorno, x
-
 def ADSBDataDecoder(data):
     ICAO = data[2]+data[3]+data[4]+data[5]+data[6]+data[7]
+    status = adsbDecoderDatabase.FindICAOExists(ICAO)
+
+    if status == False:
+        adsbDecoderDatabase.CreateAirplane(ICAO)
+        print "Novo Airplane Criado " + str(ICAO)
 
     #if ADSBParity(ICAObits) == False:
     #    return False
@@ -182,13 +173,34 @@ def ADSBDataDecoder(data):
     DF = full_bit_zero(bin(eval(DFCA)))[:5]
     DF = eval("0b" + DF) 
     CA = full_bit_zero(bin(eval(DFCA)))[5:]
-   
     b_TC = full_bit_zero(bin(eval(toHex(data[8]+data[9]))))[:5]                 #Cinco bits para o Type Code
+    TC = eval("0b"+b_TC)
     b_Mode = full_bit_zero(bin(eval(toHex(data[8]+data[9]))))[5:]               #Tres bits para o mode
 
     if DF == 17:
         print "1090 Extended Squitter - ADS-B"
-        if b_TC == "01011":
+
+        if TC == 4:
+            '''
+                bzero(&callsign, 9);
+			cs = (rawdata[5] << 16) | (rawdata[6] << 8) | (rawdata[7]);
+			callsign[0] = cs_tbl[(cs >> 18) & 0x3f];
+			callsign[1] = cs_tbl[(cs >> 12) & 0x3f];
+			callsign[2] = cs_tbl[(cs >> 6) & 0x3f];
+			callsign[3] = cs_tbl[cs & 0x3f];
+			cs = (rawdata[8] << 16) | (rawdata[9] << 8) | rawdata[10];
+			callsign[4] = cs_tbl[(cs >> 18) & 0x3f];
+			callsign[5] = cs_tbl[(cs >> 12) & 0x3f];
+			callsign[6] = cs_tbl[(cs >> 6) & 0x3f];
+			callsign[7] = cs_tbl[cs & 0x3f];
+
+			db_update_callsign(&icao, callsign);
+			sprintf(msg, "MSG,1,,,%06X,,,,,,%s,,,,,,,,0,0,0,0\n\0", icao,
+					callsign);
+			DEBUG ("ICAO:%06x Callsign:%s", icao, callsign);
+            '''
+        
+        if TC > 8 and TC < 19:
             print "Airborne Position message... Obtendo Dados (Altitude, Latitude e Longitude)"
             hex_adsb_packet = data[8:]
             bin_adsb_packet = c(hex_adsb_packet[0],hex_adsb_packet[1])+c(hex_adsb_packet[2],hex_adsb_packet[3])+c(hex_adsb_packet[4],hex_adsb_packet[5])+c(hex_adsb_packet[6],hex_adsb_packet[7])+c(hex_adsb_packet[8],hex_adsb_packet[9])+c(hex_adsb_packet[10],hex_adsb_packet[11])+c(hex_adsb_packet[12],hex_adsb_packet[13])
@@ -198,26 +210,29 @@ def ADSBDataDecoder(data):
             T = bin_adsb_packet[20:][0]
             F = bin_adsb_packet[21:][0]
 
-            status, a_id = findICAOExists(ICAO)
-            
-            if status == False:
-                Airplanes.append([ICAO, "NULL", "NULL", "NULL", "NULL", "NULL", T])
-                a_id = len(Airplanes)-1
-                print "Novo Airplane Criado " + str(a_id)
-    
             if F == '0':
                 print "Even Packet"
+                
+                #############################################################################################
                 Airplanes[a_id][1] = Latitude
                 Airplanes[a_id][3] = Longitude
                 Airplanes[a_id][5] = Altitude
                 print "Atualizado Lat0 e Long0"
+                #############################################################################################
+
                 #Atualiza dados em ICAO, 0
             elif F == '1':
                 print "Odd Packet"
+                
+                #############################################################################################
                 Airplanes[a_id][2] = Latitude
                 Airplanes[a_id][4] = Longitude
                 Airplanes[a_id][5] = Altitude
                 print "Atualizado Lat1 e Long1"
+                #############################################################################################
+
+
+                
                 #Atualiza dados em ICAO, 1
 
             print "ICAO Hex Address: " + ICAO
@@ -276,7 +291,39 @@ def ADSBDataDecoder(data):
                 print "Latitude: " + str(Latitude)
                 print "Longitude: " + str(Longitude)
 
-            #math.floor(((59 * Lat(0) - 60 * Lat(1)) / 131072) + 0.5)
+    elif TC == 19:
+        print "huae"
+        '''subtype = rawdata[4] & 0x07;
+			if (subtype == 1) { // ground non supersonic speed
+				ew_spd = rawdata[6] | ((rawdata[5] & 0x03) << 8); // -1 TODO
+				ns_spd = ((rawdata[8] >> 5) & 0x07)
+						| ((rawdata[7] & 0x7f) << 3);
+				if ((ew_spd == 0) && (ns_spd == 0))
+					return (0);
+
+				ew_dir = (rawdata[5] >> 2) & 0x01;
+				ns_dir = (rawdata[7] >> 7) & 0x01;
+				gnd_spd = floor(sqrt(ew_spd * ew_spd + ns_spd * ns_spd));
+				if ((!ew_dir) && (!ns_dir))
+					trk = (ew_spd == 0 ? 0 : 90 - 180. / M_PI * atan(ns_spd
+							/ ew_spd));
+				if ((!ew_dir) && (ns_dir))
+					trk = (ew_spd == 0 ? 180 : 90 + 180. / M_PI * atan(ns_spd
+							/ ew_spd));
+				if ((ew_dir) && (ns_dir))
+					trk = (ew_spd == 0 ? 180 : 270 - 180. / M_PI * atan(ns_spd
+							/ ew_spd));
+				if ((ew_dir) && (!ns_dir))
+					trk = (ew_spd == 0 ? 0 : 270 + 180. / M_PI * atan(ns_spd
+							/ ew_spd));
+				vr = ((rawdata[8] & 0x08) == 0 ? 1 : -1) * ((((rawdata[9] >> 2)
+						& 0x3f) | (rawdata[8] & 0x07) << 6) - 1) * 64;
+				db_update_speed_heading(&icao, &gnd_spd, &trk, &vr);
+				sprintf(msg,
+						"MSG,4,,,%06X,,,,,,,,%1.1f,%1.1f,,,%i,,0,0,0,0\n\0",
+						icao, gnd_spd, trk, vr);
+				DEBUG ("ICAO:%06x Speed:%1.1f Track:%1.1f Vertical:%i", icao, gnd_spd, trk, vr); '''
+        
 
 ADSBDataDecoder("8D75804B580FF2CF7E9BA6F701D0")
 print ""
