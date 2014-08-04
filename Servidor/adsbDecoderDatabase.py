@@ -21,16 +21,29 @@ def CreateAirplane(ICAO):
     cur2.execute("INSERT INTO LoadedHexDump (HexICAO, F, Lat0, Lon0, Lat1, Lon1, Alt, UTF, Timestamp) VALUES('"+air_data[0]+"', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL')")
     con.commit()   
 
+#Update MESMO!
 def UpdateAirplanePosition_T0(ICAO, Data):
+    pass
 
 def UpdateAirplanePosition_T1(ICAO, Data):
+    pass
 
 def UpdateAirplaneID(ICAO, Data):
+    pass
 
 def UpdateAirplaneSpeedAndAngle(ICAO, Data):
+    pass
+
+
+
+
+def VerifyAllPositionDataExists(ICAO):
+    #verifica se as lat e lon existem para F1 e F0
+    pass
     
 def FindICAOExists(ICAO):
     #verifica se existe e retorna boolean
+    pass
 
 #
 #DataBase Final
