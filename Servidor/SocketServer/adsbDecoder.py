@@ -117,37 +117,37 @@ def ADSBDataDecoder(data):
             # "Airplane Identification Message... Obtendo Dados (ID)"
             
             '''
-                bzero(&callsign, 9);
-			cs = (rawdata[5] << 16) | (rawdata[6] << 8) | (rawdata[7]);
-			callsign[0] = cs_tbl[(cs >> 18) & 0x3f];
-			callsign[1] = cs_tbl[(cs >> 12) & 0x3f];
-			callsign[2] = cs_tbl[(cs >> 6) & 0x3f];
-			callsign[3] = cs_tbl[cs & 0x3f];
-			cs = (rawdata[8] << 16) | (rawdata[9] << 8) | rawdata[10];
-			callsign[4] = cs_tbl[(cs >> 18) & 0x3f];
-			callsign[5] = cs_tbl[(cs >> 12) & 0x3f];
-			callsign[6] = cs_tbl[(cs >> 6) & 0x3f];
-			callsign[7] = cs_tbl[cs & 0x3f];
-
+               bzero(&callsign, 9)
+	       cs = (rawdata[5] << 16) | (rawdata[6] << 8) | (rawdata[7])
+	       callsign[0] = cs_tbl[(cs >> 18) & 0x3f]
+	       callsign[1] = cs_tbl[(cs >> 12) & 0x3f]
+	       callsign[2] = cs_tbl[(cs >> 6) & 0x3f]
+	       callsign[3] = cs_tbl[cs & 0x3f]
+	       cs = (rawdata[8] << 16) | (rawdata[9] << 8) | rawdata[10]
+	       callsign[4] = cs_tbl[(cs >> 18) & 0x3f]
+	       callsign[5] = cs_tbl[(cs >> 12) & 0x3f]
+	       callsign[6] = cs_tbl[(cs >> 6) & 0x3f]
+	       callsign[7] = cs_tbl[cs & 0x3f]
             '''
             adsbDecoderDatabase.UpdateAirplaneID(ICAO, Data)
 
     if TC == 19:
         # "Airborne Velocity Message... Obtendo Dados (Velocidade e Angulo)"
-                
-        '''
-         subtype = rawdata[4] & 0x07;
+         hex_adsb_packet = data[8:]
+         hex_adsb_packet = hex_adsb_packet[:14]
+         bin_adsb_packet = adsbDecoderMathAndDataLibrary.c(hex_adsb_packet[0],hex_adsb_packet[1])+adsbDecoderMathAndDataLibrary.c(hex_adsb_packet[2],hex_adsb_packet[3])+adsbDecoderMathAndDataLibrary.c(hex_adsb_packet[4],hex_adsb_packet[5])+adsbDecoderMathAndDataLibrary.c(hex_adsb_packet[6],hex_adsb_packet[7])+adsbDecoderMathAndDataLibrary.c(hex_adsb_packet[8],hex_adsb_packet[9])+adsbDecoderMathAndDataLibrary.c(hex_adsb_packet[10],hex_adsb_packet[11])+adsbDecoderMathAndDataLibrary.c(hex_adsb_packet[12],hex_adsb_packet[13])
+         subtype = eval("0b"+bin_adsb_packet[5] + bin_adsb_packet[6] + bin_adsb_packet[7])
          
-	 if subtype == 1: 
-	    ew_spd = rawdata[6] | ((rawdata[5] & 0x03) << 8); // -1 TODO
-	    ns_spd = ((rawdata[8] >> 5) & 0x07) | ((rawdata[7] & 0x7f) << 3)
+         if subtype == 1: 
+	    ew_spd = rawdata[6] | ((rawdata[5] & 0x03) << 8);
+	    '''ns_spd = ((rawdata[8] >> 5) & 0x07) | ((rawdata[7] & 0x7f) << 3)
 	    
-            if ((ew_spd == 0) and (ns_spd == 0))
+            if ew_spd == 0 and ns_spd == 0:
                return False
 
 	    ew_dir = (rawdata[5] >> 2) & 0x01
 	    ns_dir = (rawdata[7] >> 7) & 0x01
-	    gnd_spd = math.floor(sqrt(ew_spd * ew_spd + ns_spd * ns_spd))
+	    gnd_spd = math.floor(math.sqrt(ew_spd * ew_spd + ns_spd * ns_spd))
 				
 	    if ((!ew_dir) and (!ns_dir))
 	       trk = (ew_spd == 0 ? 0 : 90 - 180. / math.pi * math.atan(ns_spd/ ew_spd))
@@ -156,18 +156,13 @@ def ADSBDataDecoder(data):
 	       trk = (ew_spd == 0 ? 180 : 90 + 180. / math.pi * math.atan(ns_spd / ew_spd))
 
 	    if ((ew_dir) and (ns_dir))
-	       trk = (ew_spd == 0 ? 180 : 270 - 180. / math.pi * math.atan(ns_spd / ew_spd));
+	       trk = (ew_spd == 0 ? 180 : 270 - 180. / math.pi * math.atan(ns_spd / ew_spd))
 
 	    if ((ew_dir) adn (!ns_dir))
-	       trk = (ew_spd == 0 ? 0 : 270 + 180. / math.pi * math.atan(ns_spd / ew_spd));
+	       trk = (ew_spd == 0 ? 0 : 270 + 180. / math.pi * math.atan(ns_spd / ew_spd))
 
-	    vr = ((rawdata[8] & 0x08) == 0 ? 1 : -1) * ((((rawdata[9] >> 2) & 0x3f) | (rawdata[8] & 0x07) << 6) - 1) * 64;
-	    
-	    (&icao, &gnd_spd, &trk, &vr);
-	  '''
-        
-        adsbDecoderDatabase.UpdateAirplaneAngle(ICAO, Data)
-        
-ADSBDataDecoder("8D75804B580FF2CF7E9BA6F701D0")
-print ""
-ADSBDataDecoder("8D75804B580FF6B283EB7A157117")
+	    vr = ((rawdata[8] & 0x08) == 0 ? 1 : -1) * ((((rawdata[9] >> 2) & 0x3f) | (rawdata[8] & 0x07) << 6) - 1) * 64''
+	      
+            #adsbDecoderDatabase.UpdateAirplaneAngle(ICAO, [gnd_spd, trk, vr])'''
+
+ADSBDataDecoder("8d4008f1994404339808D3")
