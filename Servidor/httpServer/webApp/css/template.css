@@ -1,0 +1,20 @@
+html{ 
+	height: 100% 
+}
+
+body{
+	height: 100%; 
+	margin: 0; 
+	padding: 0 
+}
+
+#mapa{
+	height: 100% 
+}
+
+.close{
+	color: white;
+	font-size: 35px;
+	height: 27px;
+	width: 30px;
+}

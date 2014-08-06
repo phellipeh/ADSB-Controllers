@@ -16,6 +16,12 @@ import adsbDecoderMathAndDataLibrary
 # - Terminar o adsbDecoderDatabase
 #
 
+cs_tbl = ['@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
+	  'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
+	  'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+	  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '1', '2', '3', '4', '5',
+	  '6', '7', '8', '9', ' ', ' ', ' ', ' ', ' ', ' ']
+
 def ADSBParity(P, ICAO):
    # PI = ICAO[24]+ICAO[23]+ICAO[22]+ICAO[21]+ICAO[20]+ICAO[19]+ICAO[18]+ICAO[17]+ICAO[16]+ICAO[15]+ICAO[14]+ICAO[13]+ICAO[10]+ICAO[3]+1
    return True
@@ -115,21 +121,22 @@ def ADSBDataDecoder(data):
 
     if TC == 4:
             # "Airplane Identification Message... Obtendo Dados (ID)"
-            
+            callsign = []
             '''
-               bzero(&callsign, 9)
 	       cs = (rawdata[5] << 16) | (rawdata[6] << 8) | (rawdata[7])
 	       callsign[0] = cs_tbl[(cs >> 18) & 0x3f]
 	       callsign[1] = cs_tbl[(cs >> 12) & 0x3f]
 	       callsign[2] = cs_tbl[(cs >> 6) & 0x3f]
 	       callsign[3] = cs_tbl[cs & 0x3f]
+	       
 	       cs = (rawdata[8] << 16) | (rawdata[9] << 8) | rawdata[10]
 	       callsign[4] = cs_tbl[(cs >> 18) & 0x3f]
 	       callsign[5] = cs_tbl[(cs >> 12) & 0x3f]
 	       callsign[6] = cs_tbl[(cs >> 6) & 0x3f]
 	       callsign[7] = cs_tbl[cs & 0x3f]
             '''
-            adsbDecoderDatabase.UpdateAirplaneID(ICAO, Data)
+            id_ = 
+            adsbDecoderDatabase.UpdateAirplaneID(ICAO, [id_])
 
     if TC == 19:
         # "Airborne Velocity Message... Obtendo Dados (Velocidade e Angulo)"
