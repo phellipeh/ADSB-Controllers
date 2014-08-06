@@ -1,7 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html manifest="radar-livre.appcache">
+<!-- <html manifest="radar-livre.appcache"> --->
+<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900' rel='stylesheet' type='text/css'>
 <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="css/jquery-ui.css" rel="stylesheet" media="screen">
 <link href="css/template.css" rel="stylesheet" media="screen">
@@ -13,6 +15,9 @@
 <script src="js/index.js"></script>
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCTUlfoWBH9ui963vODx-5kad85gRhSFaw&sensor=false"></script>
 <title>Radar Livre</title>
+<noscript>
+	<h3>Para o funcionamento do Radar Livre você deve ter o JavaScript ativado no seu Dispositivo...</h3>
+</noscript>
 </head>
 <body>
 	<div class="navbar navbar-inverse navbar-fixed-top">
@@ -22,41 +27,46 @@
 					<span class="icon-bar"></span> <span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</a>
-				<a class="brand" href="./">Radar Livre</a>
+				<a class="navbar-brand" href="./">Radar Livre</a>
 				<div class="nav-collapse collapse">
 					<ul class="nav">
 						<li class="active"><a href="./">Inicio</a></li>
 						<li><a href="./sobre.html">Sobre</a></li>
 					</ul>
 				</div>
-				<!--/.nav-collapse -->
 			</div>
 		</div>
 	</div>
 	<a type="hidden" id="sidr-trigger" href="#sidr">Toogle menu</a>
 	<div id="sidr">
-		<button type="button" class="close" aria-hidden="true">&times;</button>
-		<strong>HEX: </strong>
-		<p id="hex"></p>
-		<br/>
-		<strong>Latitude: </strong>
-		<p id="latitude"></p>
-		<br/>
-		<strong>Longitude: </strong>
-		<p id="longitude"></p>
-		<br/>
-		<br/>
-		<strong>Altitude: </strong>
-		<p id="altitude"></p>
-		<strong>Grau: </strong>
-		<p id="grau"></p>
-		<br/>
-		<strong>Velocidade: </strong>
-		<p id="velocidade"></p>
-		<br/>
-		<strong>Atualizado em: </strong>
-		<p id="hora"></p>
+		<div class="inside_sidr">
+			<button type="button" class="close" aria-hidden="true"></button>
+			<p class="point">HEX: </p>
+			<p id="hex" class="info"></p>
+			<p class="point">Latitude: </p>
+			<p id="latitude" class="info"></p>
+			<p class="point">Longitude: </p>
+			<p id="longitude" class="info"></p>
+			<p class="point"><span class=""></span>Altitude: </p>
+			<p id="altitude" class="info"></p>
+			<p class="point">Grau: </p>
+			<p id="grau" class="info"></p>
+			<p class="point">Velocidade: </p>
+			<p id="velocidade" class="info"></p>
+			<p class="point">Atualizado em: </p>
+			<p id="hora" class="info"></p>
+		</div>
+	</div>
+	<div class="loading">
+		<div class="loadMessages">
+			<p class="headMessage"><h2>Loading ...</h2></p></p>
+			<p class="exceptionMessage">Se der em m*rda mostra uns paranaues aqui</p>
+		</div>
 	</div>
 	<div id="mapa" style="width:100%; height:100%"></div>
+	<div class="bottomright">
+		<div class="radarlogo"></div>
+		<div class="adsbinfo"></div>
+	</div>
 </body>
 </html>

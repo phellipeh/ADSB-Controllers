@@ -1,22 +1,52 @@
 var map;
 var marcadores = [];
 
+var appLat, appLon; 
+appLat = -14.239424;
+appLon = -53.186502;
+
+var error = false;
+
 $(document).ready(function(){
+	
+	if (navigator.geolocation) {
+	  navigator.geolocation.getCurrentPosition(showpos,erropos);
+	}
+
 	$(".close").click(function(){
 		$.sidr('close', 'sidr');
 	});
 	
-	inicializarMapa();
+	try{
+		inicializarMapa();
+	}
+	catch(err){
+		createLoadingScreenError("Erro ao Inicializar Mapa...");
+		error = true;
+	}
 	
 	$('#sidr-trigger').sidr();
 	
 	var wsUri = "ws://" + document.location.host + ":9999/Radar-Livre/websocket";
-	var websocket = new WebSocket(wsUri);
+	try{
+		var websocket = new WebSocket(wsUri);
+	}
+	catch(err){
+		createLoadingScreenError("Erro ao Conectar ao Servidor de Dados ADS-B...");
+		error = true;
+	}
 	
+	websocket.onerror = function(event) { 
+		//verifica se o elemento do loading existe
+		error = true;
+	};
 	websocket.onopen = function(event) { onOpen(event); };
 	websocket.onmessage = function(event) { onMessage(event); };
 	
-	var timer = setInterval(function(){myTimer();},3000);
+	if(error == false)
+			removeLoadingScreen();
+	
+	var timer = setInterval(function(){myTimer();},1000);
 
 	function myTimer() {
 		console.log("Timer passando");
@@ -28,9 +58,40 @@ $(document).ready(function(){
 				marcadores.remove(val);
 			}
 		});
+		
 	}
 	
 });
+
+function showpos(position){
+  appLat=position.coords.latitude;
+  appLon=position.coords.longitude;
+ 
+  try{
+		inicializarMapa();
+	}
+	catch(err){
+		createLoadingScreenError("Erro ao Inicializar Mapa...");
+		error = true;
+	}
+	
+}
+
+function erropos(error){
+	console.log("Erro");
+}
+
+function removeLoadingScreen(){
+	$(".loading").fadeOut('slow');
+}
+
+function createLoadingScreenError(Message){
+	$('.exceptionMessage').append(Message);
+}
+
+function createErrorMessageBox(Message){
+
+}
 
 function toTimestamp(strDate){
 	var datum = Date.parse(strDate);
@@ -38,12 +99,14 @@ function toTimestamp(strDate){
 }
 
 function inicializarMapa() {
+
     var mapOptions = {
-      center: new google.maps.LatLng(-14.239424,-53.186502),
-      zoom: 4,
+      center: new google.maps.LatLng(appLat, appLon),
+      zoom: 4, 
       disableDefaultUI: true,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
+	
     map = new google.maps.Map(document.getElementById("mapa"),
         mapOptions);
     
@@ -71,7 +134,6 @@ function jaExiste(aeronave){
 }
 
 function onMessage(event){
-	console.log(event);
 	var aeronave = JSON.parse(event.data);
 	
 	$.each(aeronave, function(key, val){
