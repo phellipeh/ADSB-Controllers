@@ -18,7 +18,7 @@ status_conec_serv = False
 
 #Inicia Serial
 try:
-    s_com = serial.Serial('COM1', 19200)
+    s_com = serial.Serial('/dev/ttyACM01', 19200)
 except:
     print "Nao Foi Possivel conectar-se ao Receptor..."
     sys.exit(0)
