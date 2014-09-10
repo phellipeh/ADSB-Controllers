@@ -13,6 +13,10 @@ def full_bit_zero(data):
         data= '0' + data
     return data
 
+def distance(lat, lon, lat1, lon1):
+    return (6371 * math.acos(math.sin(lat * math.pi / 180.) * math.sin(lat1 * math.pi / 180.)
+          + math.cos(lat * math.pi / 180.) * math.cos(lat1 * math.pi / 180.) * math.cos((lon - lon1) * math.pi / 180.)))
+
 def c(d1, d2):
     return full_bit_zero(bin(eval(toHex(d1+d2))))
 

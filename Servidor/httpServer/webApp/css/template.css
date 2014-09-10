@@ -21,13 +21,49 @@ body{
 	font-weight: 600;
 }
 
+.navbar .navbar-form{
+    padding: 0 15px;
+    border: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.flightsearchbox{
+	margin-top: 8px;
+}
+
+.msgAlerta{
+	display: none;
+	width: 500px;
+	position: absolute;
+	top: 70px;
+	z-index: 99999;
+	left: 50%;
+	margin-left: -250px;
+}
+
+.bottomright{
+	position: absolute;
+	width: 150px;
+	float: right;
+	right: 20px;
+	bottom: 20px;
+	z-index:999999;
+	opacity: 0.5;
+}
+
+.radarlogo img{
+	width: 150px;
+}
+
 .loadMessages{
 	position: absolute;
 	z-index: 99999;
 	top:50%;
 	width: 500px;
 	left: 50%;
-	margin-left: -250px;
+	margin-left: -240px;
+	margin-top: -40px;
 	text-align: center;
 	color: #fff;
 }

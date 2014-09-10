@@ -3,15 +3,15 @@
 # TODO LIST
 # - Fatiar os Dados em JSON e armazenar no Banco de Dados
 
-import sockets
-import sqlite3 as sql
+from socket import * 
 import threading
 import sys
-import adsbDecoder
+import PyAdsbDecoder
+import PyAdsbDecoderDatabase
 
-host = "localhost"
-port = 3000
-limit = 10
+host = 'localhost'
+port = 5000
+limite = 10
 
 #Socket Server
 print "Iniciando Socket Server... ",
@@ -20,14 +20,15 @@ try:
     sock.bind((host, port))
     sock.listen(limite)
     print "OK! Porta: "+str(port)
-except Exception:
-    print "Erro! Nao foi possivel iniciar servidor na porta" + str(Exception)
+except Exception as ex:
+    print "Erro! Nao foi possivel iniciar servidor na porta...\n" + str(ex)
     sys.exit(1)
 
 def clientthread(conn):
     while True:
         data=conn.recv(4096)
-        ADSBDataDecoder(data) #retorna hex, alt, lat, e lon, (velocidade, nome, angulo)
+        PyAdsbDecoder.ADSBDataDecoder(data) #retorna hex, alt, lat, e lon, (velocidade, nome, angulo)
+        PyAdsbDecoderDatabase.DumpColetores(data)
         
 #Socket server
 while True:

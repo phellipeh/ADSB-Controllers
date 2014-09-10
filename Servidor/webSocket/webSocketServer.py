@@ -5,15 +5,35 @@ class ADSBDataEcho(WebSocket):
 
         def handleMessage(self):
             if self.data == 'GET':
-                self.sendMessage(str(httpServerDatabase.GetRealtimeAirplaneList()))
+                try:
+                        self.sendMessage("get_return:"+str(httpServerDatabase.GetRealtimeAirplaneList()))
+                except Exception as ex:
+                        print "Exception: " + str(ex)
+                
+            elif 'getroute(' in self.data:
+                icao = self.data.replace("getroute(","")
+                icao = icao.replace(")","")
+                try:
+                        self.sendMessage("getroute_return:"+str(httpServerDatabase.GetAirplaneTrack(icao)))
+                except Exception as ex:
+                        print "Exception: " + str(ex)
+
+            elif 'buscar(' in self.data:
+                    FlightName = self.data.replace("buscar(","")
+                    FlightName = FlightName.replace(")","")
+                    self.sendMessage("search_return:"+SearchFlight(FlightName))
 
         def handleConnected(self):
             print self.address, ' Conectado'
-            self.sendMessage(str(httpServerDatabase.GetRealtimeAirplaneList()))
-            
 
         def handleClose(self):
             print self.address, ' Desconectado'
 
-server = SimpleWebSocketServer('', 9999, ADSBDataEcho)
-server.serveforever()
+
+print "Iniciando..."
+try:
+ server = SimpleWebSocketServer('', 9999, ADSBDataEcho)
+ print "Servidor Iniciado na porta 9999"
+ server.serveforever()
+except Exception as ex:
+ print "Exception: " + str(ex)

@@ -1,0 +1,2 @@
+Relatorio de Erros dos Coletores
+Sistema de Atualização Automatica dos Coletores

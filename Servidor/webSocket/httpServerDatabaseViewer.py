@@ -11,30 +11,30 @@ except:
     sys.exit(0)
 
 def GetRealtimeAirplaneList():
-    #ts = int(time.time()) - 60
+ #ts = int(time.time()) - 60
     #cur2.execute("SELECT * FROM HexDataBase WHERE timestamp > "+str(ts)+" ORDER BY timestamp")
     cur2.execute("SELECT * FROM HexDataBase")
     #timestamp, hexicao, icao, callsign, lat, lon, alt, climb, head, velocidadegnd, utf
     columns = (
-     'id_reg', 'timestamp', 'hex', 'icao', 'id', 'latitude', 'longitude', 'altitude', 'climb', 'head', 'velocidadegnd', 'utf' 
+     'id_reg', 'timestamp', 'hex', 'icao', 'id', 'latitude', 'longitude', 'altitude', 'climb', 'grau', 'velocidadegnd', 'utf' 
     ) #inclinacao, angulo, origem
 
     results = []
     for row in cur2.fetchall():
          results.append(dict(zip(columns, row)))
-    return json.dumps(results, indent=2)
+    print json.dumps(results, indent=2)
 
 def GetAirplaneTrack(planehex):
-    cur2.execute("SELECT * FROM HexDataBase WHERE hexicao = '"+str(planehex)+"' ORDER BY timestamp")
+    cur2.execute("SELECT * FROM HexDataBase WHERE hexicao = '"+planehex+"' ORDER BY timestamp")
 
     columns = (
-     'id_reg', 'timestamp', 'hex', 'icao', 'id', 'latitude', 'longitude', 'altitude', 'climb', 'head', 'velocidadegnd', 'utf'
+     'hex', 'id', 'latitude', 'longitude', 'altitude', 'grau', 'utf', 'timestamp'
     )
 
     results = []
     for row in cur2.fetchall():
          results.append(dict(zip(columns, row)))
-    return json.dumps(results, indent=2)
+    print json.dumps(results, indent=2)
 
 def SearchFlight(FlightName):
     cur2.execute("SELECT * FROM HexDataBase WHERE id_ = '"+str(FlightName)+"' ORDER BY timestamp DESC LIMIT 1")
@@ -46,4 +46,10 @@ def SearchFlight(FlightName):
     results = []
     for row in cur2.fetchall():
          results.append(dict(zip(columns, row)))
-    return json.dumps(results, indent=2)
+    print json.dumps(results, indent=2)
+
+#SearchFlight("TAM")
+
+GetRealtimeAirplaneList()
+#GetAirplaneTrack("E48395")
+    
