@@ -48,8 +48,7 @@ print "Retorno do Receptor: "+str(k)
 #Loop Captura e envio dos Dados
 while True:
     line = s_com.readline()
-    data = line[14:]
-    data = data[:-1]
+    line = line[14:][:-2]
     try:
      SalvaHex(line)  
     except:
