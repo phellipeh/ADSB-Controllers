@@ -19,12 +19,12 @@ Ground Position
 
 Coletor
 ----------------------------------------
-Testar Código
+Testar Código 								DOING
 
 
 Servidor
 ----------------------------------------
-Armazenar Informações Enviadas
+Armazenar Informações Enviadas						DONE
 Separar JSON
 Separar infos relacionadas ao receptor
 
@@ -45,10 +45,11 @@ Saida de Dados
 
 Geral
 ----------------------------------------
-Obter lista completa (lat, lon [em formato decimal] e ICAO) de Todos os Aeroportos e Aeródromos Brasieiros
+Obter lista completa (lat, lon [em formato decimal] e ICAO) 
+de Todos os Aeroportos e Aeródromos Brasieiros
 
-Obter Lista de Todas as Linhas Aéreas
-Obter Lista de todos os paises por icao
+Obter Lista de Todas as Linhas Aéreas					DONE
+Obter Lista de todos os paises aeronaves por icao
 
 
 AirMonitor

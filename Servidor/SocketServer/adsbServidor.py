@@ -32,16 +32,18 @@ def clientthread(conn):
         try:
             data=conn.recv(4096)
         except:
-            print "O Receptor esta OFF"
+            print "O Receptor esta OFF - Conexao Encerrada"
+            sock.close()
         
         PyAdsbDecoderDatabase.DumpColetores(data)
         dp = json.loads(data)
         print dp
         
-        #if dp[3] == 'ADSBHEXDATA':
-           # dp2 = json.loads(data[0])
-          #  for z in dp2:
-           #     PyAdsbDecoder.ADSBDataDecoder(z) #retorna hex, alt, lat, e lon, (velocidade, nome, angulo)
+        if dp[3] == 'ADSBHEXDATA':
+            dp2 = json.loads(dp[0])
+            for z in dp2:
+                print "adsbpack"+z[0]
+                PyAdsbDecoder.ADSBDataDecoder(z[0]) #retorna hex, alt, lat, e lon, (velocidade, nome, angulo)
         
         
 #Socket server

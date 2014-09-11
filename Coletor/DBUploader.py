@@ -20,7 +20,7 @@ except sql.OperationalError, msg:
     print "Erro ao inserir os dados no banco de dados."
 
 def LimpaHex(limiteTS):
-    cur.execute("DELETE FROM HexDataBase WHERE DateTime <" +str(limiteTS))
+    cur.execute("DELETE FROM HexDataBase WHERE DateTime < '" +str(limiteTS)+"'")
     con.commit()
 
 def TryConnect(): #Conecta ao Servidor

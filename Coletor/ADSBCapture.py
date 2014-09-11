@@ -17,7 +17,7 @@ try:
     con = sql.connect('datadumptemp.db')
     try:
         cur = con.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS HexDataBase (Hex TEXT, Data TEXT, DateTime TEXT);")
+        cur.execute("CREATE TABLE IF NOT EXISTS HexDataBase (Hex TEXT, Data TEXT, DateTime BIGINT);")
         con.commit()
     except sql.OperationalError, msg:
         print msg
