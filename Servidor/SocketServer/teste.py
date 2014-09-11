@@ -2,6 +2,7 @@ import PyAdsbDecoder
 import CRCCalc
 
 f = file('log.txt', 'r')
+'''
 for data in f:
   print "-----------------------"
   print "Pacote: "+data
@@ -15,3 +16,4 @@ for data in f:
        
   
   print "\n\n"
+'''

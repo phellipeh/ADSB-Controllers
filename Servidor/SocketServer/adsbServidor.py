@@ -9,10 +9,12 @@ import sys
 import PyAdsbDecoder
 import PyAdsbDecoderDatabase
 import time
+import json
 
 host = 'localhost'
 port = 5000
 limite = 10
+data = ''
 
 #Socket Server
 print "Iniciando Socket Server... ",
@@ -27,9 +29,20 @@ except Exception as ex:
 
 def clientthread(conn):
     while True:
-        data=conn.recv(4096)
-        PyAdsbDecoder.ADSBDataDecoder(data) #retorna hex, alt, lat, e lon, (velocidade, nome, angulo)
+        try:
+            data=conn.recv(4096)
+        except:
+            print "O Receptor esta OFF"
+        
         PyAdsbDecoderDatabase.DumpColetores(data)
+        dp = json.loads(data)
+        print dp
+        
+        #if dp[3] == 'ADSBHEXDATA':
+           # dp2 = json.loads(data[0])
+          #  for z in dp2:
+           #     PyAdsbDecoder.ADSBDataDecoder(z) #retorna hex, alt, lat, e lon, (velocidade, nome, angulo)
+        
         
 #Socket server
 while True:

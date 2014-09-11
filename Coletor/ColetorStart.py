@@ -15,8 +15,9 @@ Update()
 print 'Iniciando Sistema Coletor...'
 
 if os.name == 'nt':
-  os.system("START DBUploader.py")
   os.system("START ADSBCapture.py")
+  os.system("START DBUploader.py")
 else:
-  os.system("DBUploader.py&")
-  os.system("ADSBCapture.py")
+  os.system("ADSBCapture.py&")
+  os.system("DBUploader.py")
+

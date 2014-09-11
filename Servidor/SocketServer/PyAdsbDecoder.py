@@ -14,7 +14,7 @@ cs_tbl = ['@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
 	  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '1', '2', '3', '4', '5',
 	  '6', '7', '8', '9', ' ', ' ', ' ', ' ', ' ', ' ']
 
-def ADSBDataDecoder(data, showStatus = True, dumpOnDatabase = True):
+def ADSBDataDecoder(data, showStatus = True, dumpOnDatabase = True, latHome = -5.19506, lonHome = -39.28307):
     
     if len(data) == 14+1:
        print "Pacote: 56 Bits"
@@ -132,8 +132,9 @@ def ADSBDataDecoder(data, showStatus = True, dumpOnDatabase = True):
                        CALLSIGN, Altitude, CLIMB, Head, VelocidadeGnd, T = PyAdsbDecoderDatabase.getAirplaneFullLog(ICAO)
                        Data = [ICAO, CALLSIGN, Latitude, Longitude, Altitude, CLIMB, Head, VelocidadeGnd, T]
 
-                       print "Distancia do captador: " + str(PyAdsbDecoderMathAndDataLibrary.distance(Latitude, Longitude, -5.19506, -39.28307))
-                       if PyAdsbDecoderMathAndDataLibrary.distance(Latitude, Longitude, -5.19506, -39.28307) > 440:
+                       print "Posicao do Captador - Lat: " + str(latHome) +" Lon: " + str(lonHome)
+                       print "Distancia do captador: " + str(PyAdsbDecoderMathAndDataLibrary.distance(Latitude, Longitude, latHome, lonHome))
+                       if PyAdsbDecoderMathAndDataLibrary.distance(Latitude, Longitude, latHome, lonHome) > 440:
                           print "Pacote Rejeitado - Distancia Muito longa."
                           return False
                         

@@ -1,6 +1,7 @@
 import sys
 import sqlite3 as sql
 import datetime
+import time
 import serial
 import json
 
@@ -26,8 +27,8 @@ except:
     sys.exit(0)
 
 def SalvaHex(HexData):
-    datetime_ = datetime.datetime.utcnow()
-    cur.execute("INSERT INTO HexDataBase (Hex, DateTime) VALUES('"+HexData+"', '"+str(datetime_)+"')")
+    ts = time.time()
+    cur.execute("INSERT INTO HexDataBase (Hex, DateTime) VALUES('"+HexData+"', '"+str(ts)+"')")
     con.commit()
 
 print("Obtendo Versao do Receptor...")
@@ -40,10 +41,13 @@ s_com.write("#43-02\r\n")
 k = s_com.readline()
 print "Retorno do Receptor: "+str(k)
 
+print "Modo de Captura Iniciado"
+
 #Loop Captura e envio dos Dados
 while True:
     line = s_com.readline()
     line = line[14:][:-2]
+    print line
     try:
      SalvaHex(line)  
     except:
