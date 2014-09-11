@@ -1,8 +1,3 @@
-#
-# TODO LIST)
-# - Salvar Dados toda hora
-#
-
 import sys
 import sqlite3 as sql
 import datetime

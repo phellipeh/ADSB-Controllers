@@ -4,10 +4,11 @@
 # - Fatiar os Dados em JSON e armazenar no Banco de Dados
 
 from socket import * 
-import threading
+import thread
 import sys
 import PyAdsbDecoder
 import PyAdsbDecoderDatabase
+import time
 
 host = 'localhost'
 port = 5000
@@ -34,4 +35,4 @@ def clientthread(conn):
 while True:
     conn, addr = sock.accept()
     print time.strftime("%H:%M:%S") + " - Conexao com Client - IP:" + str(addr)
-    start_new_thread(clientthread,(conn,))
+    thread.start_new_thread(clientthread,(conn,))

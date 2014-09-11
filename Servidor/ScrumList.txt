@@ -1,0 +1,55 @@
+Web
+----------------------------------------
+Ajustar Loading Screens
+Ajustar Message Box
+Remoção de Aeronaves Antigas
+(N*) Listar e apontar Aeroportos e Aerodromos
+Identificar Pais da Aeronave
+(
+hexStr='7F';
+num = parseInt(hexStr,16); 
+)
+
+PyADSBDecoder
+----------------------------------------
+ADS-B 56bits
+VR
+Ground Position
+(N*) Aircraft Type
+
+Coletor
+----------------------------------------
+Testar Código
+
+
+Servidor
+----------------------------------------
+Armazenar Informações Enviadas
+Separar JSON
+Separar infos relacionadas ao receptor
+
+
+API
+----------------------------------------
+Entrada de Dados
+(Dados Meterologicos)
+(Voos)
+
+Saida de Dados
+(Aeroportos e Aerodromos)
+(Rotas)
+(Voos)
+(Areas de Risco)
+(Voos em Risco - Alertas de Voo)
+
+
+Geral
+----------------------------------------
+Obter lista completa (lat, lon [em formato decimal] e ICAO) de Todos os Aeroportos e Aeródromos Brasieiros
+
+Obter Lista de Todas as Linhas Aéreas
+Obter Lista de todos os paises por icao
+
+
+AirMonitor
+----------------------------------------

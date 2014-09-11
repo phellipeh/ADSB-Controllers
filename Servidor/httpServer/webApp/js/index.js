@@ -17,7 +17,6 @@ var flightPlanCoordinates = [];
 
 $(document).ready(function(){
 
-	$(".msgAlerta").show();
 	$( "#target" ).submit(function( event ) {
 	  event.preventDefault();
 	  var nomevoo = $(".buscavoo").val();
@@ -30,7 +29,7 @@ $(document).ready(function(){
 	
 	try{
 		inicializarMapa();
-		
+		$(".msgAlerta").show();
 	}
 	catch(err){
 		createLoadingScreenError("Erro ao Inicializar Mapa...");
@@ -50,13 +49,19 @@ $(document).ready(function(){
 	
 	websocket.onerror = function(event) { 
 		//verifica se o elemento do loading existe
+	    //identifica o typo de erro
 		error = true;
+		$(".msgAlerta").hide();
+		$(".msgErro").show();
+		
 	};
+	
 	websocket.onopen = function(event) { onOpen(event); };
 	websocket.onmessage = function(event) { onMessage(event); };
 	
 	if(error == false)
 		removeLoadingScreen();
+		generateAiportPoints();
 		
 	var timer = setInterval(function(){myTimer();}, 10000);
 
@@ -75,6 +80,22 @@ $(document).ready(function(){
 	
 });
 	
+function generateAiportPoints(){
+  var image = 'img/airport-terminal.png';
+  var myLatLng = new google.maps.LatLng(-3.776945,-38.533119);
+  var beachMarker = new google.maps.Marker({
+      position: myLatLng,
+      map: map,
+	  title: 'Aeroporto Internacional Pinto Martins - FOR',
+      icon: image
+  });
+}
+	
+function timestamp2timedate(time){
+    var theDate = new Date(time * 1000);
+    return theDate.toGMTString();
+}
+	
 function erropos(error){
 	console.log("Erro");
 }
@@ -84,6 +105,7 @@ function removeLoadingScreen(){
 }
 
 function createLoadingScreenError(Message){
+    $(".msgAlerta").hide();
 	$('.exceptionMessage').append(Message+"<br>");
 }
 
@@ -110,9 +132,9 @@ function inicializarMapa() {
     map = new google.maps.Map(document.getElementById("mapa"),
         mapOptions);
     
-	google.maps.event.addListener(map,'click', function(){
-		$.sidr('close', 'sidr');
-	});
+	//google.maps.event.addListener(map,'click', function(){
+	//	$.sidr('close', 'sidr');
+	//});
 }
 
 function onOpen(event){}
@@ -182,7 +204,9 @@ function adicionarMarcador(aeronave){
         icon: image,
         title: aeronave.hex,
         hora: aeronave.hora,
-		id: aeronave.id
+		id: aeronave.id,
+		velocidade: aeronave.velocidadegnd,
+		timestamp: aeronave.timestamp
 	});
 	marcadores.push(marcador);
 	google.maps.event.addListener(marcador, 'click', function() {
@@ -191,12 +215,21 @@ function adicionarMarcador(aeronave){
 		$("#idvoo").text(aeronave.id);
 		$("#latitude").text(aeronave.latitude);
 		$("#longitude").text(aeronave.longitude);
-		$("#altitude").text(aeronave.altitude);
-		$("#grau").text(aeronave.head);
-		$("#velocidade").text(aeronave.velocidade);
+		$("#altitudeft").text(aeronave.altitude+' ft');
+		$("#altitudemt").text((aeronave.altitude*0.3048).toFixed(2)+' m');
+		$("#grau").text(aeronave.head+'°');
+		$("#velocidade").text(aeronave.velocidadegnd + ' knots');
+		
+		if(aeronave.velocidadegnd != null){
+			velocidade = aeronave.velocidadegnd * 1.852;
+		}
+		
+		$("#velocidadekmh").text(velocidade.toFixed(2) + ' km/h');
 		$("#hora").text(aeronave.hora);
 		
 		websocket.send("getroute("+aeronave.hex+")");
+		
+		$("#datahora").text(timestamp2timedate(aeronave.timestamp));
 		
 		var flightPlanCoordinatesZ = [];
 		
@@ -244,7 +277,9 @@ function atualizarMarcador(aeronave){
 				$("#hex").text(aeronave.hex);
 				
 				if(aeronave.id != null){
-					$("#idvoo").text(aeronave.id);
+					airLineData = identifyAirLineInformations(aeronave.id);
+					$("#idvoo").text(airLineData[0]+" / "+aeronave.id);
+					$("#linha").text(airLineData[1]+" - "+airLineData[2]);
 				}
 				
 				if(aeronave.latitude != null){
@@ -252,15 +287,18 @@ function atualizarMarcador(aeronave){
 					$("#longitude").text(aeronave.longitude);
 				}
 				if(aeronave.altitude != null){
-					$("#altitude").text(aeronave.altitude);
+					$("#altitudeft").text(aeronave.altitude+' ft');
+					$("#altitudemt").text((aeronave.altitude*0.3048).toFixed(2)+' m');
 				}
 				if(aeronave.head != null){
-					$("#grau").text(aeronave.head);
+					$("#grau").text(aeronave.head+'°');
 				}
-				if(aeronave.velocidade != null){
-					$("#velocidade").text(aeronave.velocidade);
+				if(aeronave.velocidadegnd != null){
+					$("#velocidade").text(aeronave.velocidadegnd+' knots');
+					velocidade = aeronave.velocidadegnd * 1.852;
+					$("#velocidadekmh").text(velocidade.toFixed(2)+' km/h');
 				}
-				$("#hora").text(aeronave.hora);
+				$("#datahora").text(timestamp2timedate(aeronave.timestamp));
 			});
 			val.hora = aeronave.hora;
 			console.log(val.hora);
