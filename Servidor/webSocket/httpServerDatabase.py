@@ -47,3 +47,15 @@ def SearchFlight(FlightName):
     for row in cur2.fetchall():
          results.append(dict(zip(columns, row)))
     return json.dumps(results, indent=2)
+
+def GetListAirports():
+    cur2.execute("SELECT * FROM airportlist")
+    #timestamp, hexicao, icao, callsign, lat, lon, alt, climb, head, velocidadegnd, utf
+    columns = (
+     'icao', 'name', 'state', 'city', 'latitude', 'longitude' 
+    ) #inclinacao, angulo, origem
+
+    results = []
+    for row in cur2.fetchall():
+         results.append(dict(zip(columns, row)))
+    return json.dumps(results, indent=2)

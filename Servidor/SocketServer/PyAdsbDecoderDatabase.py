@@ -3,7 +3,7 @@ import CRCCalc
 import datetime
 import sys
 import time
-
+import ServerReport
 
 #ID, TIMESTAMP, ICAO, CALLSING, LAT, LON, ALT, INCLINACAO, ORIENTACAO, VELOCIDADE_GND, UTF, 
 #ID, TIMESTAMP, ICAO, CALLSING, LAT0, LON0, LAT1, LON1, ALT, INCLINACAO, ORIENTACAO, VELOCIDADE_GND, UTF
@@ -21,10 +21,12 @@ try:
         con2.commit()
     except Exception as ex:
         print ex
+        ServerReport.report('PyAdsbDecoderDataBase', '0', str(ex))
         print "return: Erro ao inserir os dados no banco de dados."
         sys.exit(0)
 except Exception as ex:
     print "Nao Foi Possivel conectar-se ao Banco de Dados Local Para adsbDecoder..."
+    ServerReport.report('PyAdsbDecoderDataBase', '0', str(ex))
     print ex
     sys.exit(0)
 
@@ -86,6 +88,7 @@ try:
     con.commit()
 except:
     print "Nao Foi Possivel conectar-se ao Banco de Dados Local..."
+    ServerReport.report('PyAdsbDecoderDataBase', '0', str(ex))
     sys.exit(0)
 
 def getLastPositionReport(ICAO):
@@ -114,11 +117,13 @@ try:
         cur2.execute("CREATE TABLE IF NOT EXISTS ColetorDataRegistred (IDColetor TEXT, Format TEXT, Data TEXT, Timestamp bigint);")
         con2.commit()
     except Exception as ex:
+        ServerReport.report('PyAdsbDecoderDataBase', '0', str(ex))
         print ex
         print "return: Erro ao inserir os dados no banco de dados."
         sys.exit(0)
-except:
+except Exception as ex:
     print "Nao Foi Possivel conectar-se ao Banco de Dados Local Para adsbDecoder..."
+    ServerReport.report('PyAdsbDecoderDataBase', '0', str(ex))
     sys.exit(0)
 
 def DumpColetores(Data):

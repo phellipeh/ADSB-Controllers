@@ -6,14 +6,16 @@
 		<link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900' rel='stylesheet' type='text/css'>
 		<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
 		<link href="css/jquery-ui.css" rel="stylesheet" media="screen">
-		<link href="css/template.css" rel="stylesheet" media="screen">
 		<link href="css/jquery.sidr.dark.css" rel="stylesheet" media="screen">
+		<link href="css/template.css" rel="stylesheet" media="screen">
 		<script src="js/jquery.min.js"></script>
 		<script src="js/bootstrap.min.js"></script>
 		<script src="js/jquery.sidr.min.js"></script>
 		<script src="js/jquery-ui.js"></script>
+		<script src="js/ohsnap.js"></script>
 		<script src="js/index.js"></script>
 		<script src="js/airlinenames.js"></script>		
+		<script src="js/dicas.js"></script>		
 		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCTUlfoWBH9ui963vODx-5kad85gRhSFaw&sensor=false"></script>
 		<title>Radar Livre</title>
 		<noscript>
@@ -21,6 +23,7 @@
 		</noscript>
 	</head>
 	<body>
+		<div id="ohsnap"></div>
 		<div class="bottomright">
 			<div class="radarlogo"><img src="img/logoradar.png"></div>
 		</div>
@@ -32,16 +35,7 @@
 						<span class="icon-bar"></span>
 					</a>
 					<a class="navbar-brand" href="./">Radar Livre</a>
-					<!-- <div class="col-xs-5 col-sm-3 pull-right flightsearchbox">
-						<form id="target" action="">
-						<div class="input-group">
-						  <input type="text" class="form-control buscavoo" placeholder="Buscar Voo">
-						  <span class="input-group-btn">
-							<button type="submit" class="btn btn-black">Buscar</div>
-						  </span>
-						</div>						  
-						</form>
-					</div> -->
+					
 					<div class="nav-collapse collapse">
 						<ul class="nav">
 							<li class="active"><a href="./">Inicio</a></li>
@@ -51,37 +45,50 @@
 				</div>
 			</div>
 		</div>
-		<a type="hidden" id="sidr-trigger" href="#sidr">Toogle menu</a>
 		<div id="sidr">
 			<div class="inside_sidr">
-				<button type="button" class="close" aria-hidden="true">x</button>
-				<p class="point">HEX: </p>
-				<span id="hex" class="info"></span>
-				<p class="point">CallSign: </p>
-				<span id="idvoo" class="info"></span>
-				<p class="point">Linha Aérea: </p>
-				<span id="linha" class="info"></span>
-				<p class="point">Latitude: </p>
-				<span id="latitude" class="info"></span>
-				<p class="point">Longitude: </p>
-				<span id="longitude" class="info"></span>
-				<p class="point">Altitude: </p>
-				<span id="altitudeft" class="info"></span>
-				<span id="altitudemt" class="info"></span>
-				<p class="point">Grau: </p>
-				<span id="grau" class="info"></span>
-				<p class="point">Velocidade: </p>
-				<span id="velocidade" class="info"></span>
-				<span id="velocidadekmh" class="info"></span>
-				<p class="point">Atualizado em: </p>
-				<span id="datahora" class="info"></span>
+				<button type="button" class="close" aria-hidden="true"><span class="glyphicon glyphicon-remove"></span></button>
+				<div class="tableHead">
+					<div id="idvoo" class="info"></div>
+				</div>
+				<div style="margin-top: 2px;"></div>
+				<div class="tableElement">
+					ICAO: <span id="hex" class="info"></span>
+				</div>
+				<div class="tableElement">
+					Linha Aérea: <span id="linha" class="info"></span>
+				</div>
+				<div class="tableElement">
+					Latitude: <span id="latitude" class="info"></span>
+				</div>
+				<div class="tableElement">
+					Longitude: <span id="longitude" class="info"></span>
+				</div>
+				<div class="tableElement">
+					Altitude: <span id="altitude" class="info"></span>
+				</div>
+				<div class="tableElement">
+					Grau: <span id="grau" class="info"></span>
+				</div>
+				<div class="tableElement">
+					Velocidade: <span id="velocidade" class="info"></span>
+				</div>	
+				<div class="tableElement">
+					Aircraft Category / Type: <span id="aircraftcatandtype" class="info"></span>
+				</div>	
+				<div class="tableElement">
+					Atualizado em: <span id="datahora" class="info"></span>
+				</div>
 			</div>
 		</div>
-		<div class="alert alert-danger msgErro"><center>Erro ao conectar-se ao Sistema de Voos!</center></div>
-		<div class="alert alert-info msgAlerta"><center>Obtendo Localização dos Voos...</center></div>
 		<div class="loading">
 			<div class="loadMessages">
 				<p class="headMessage"><h2>Iniciando ...</h2></p></p>
+				<div class="progress">
+				  <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+				  </div>
+				</div>
+				<p class="userLoadMessage"></p>
 				<p class="exceptionMessage"></p>
 			</div>
 		</div>

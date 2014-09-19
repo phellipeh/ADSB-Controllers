@@ -302,8 +302,8 @@ var airLines =[
 	["X9", "KHO", "Khors Aircompany", "Ukraine"], 
 	["XA", "XAA", "ARINC/Aeronautical Radio Inc.", "USA"],
 	["XB", "IAT", "IATA/International Air Transport Association", "Canada"],
-	["XC", "KDC", "KD Air", "Canada"], Kay Dee
-	["XF", "VLK", "Vladivostok Air", "Russia"], Vladair
+	["XC", "KDC", "KD Air", "Canada"], 
+	["XF", "VLK", "Vladivostok Air", "Russia"], 
 	["XH", "KHH", "Alexandria Airlines", "Egypt"],
 	["XH", "XXH", "Special Ground Handling Service", "USA"],
 	["XI", "XXI", "AEROTEL/Aeronautical Telecommunications", "Jamaica"],
@@ -389,7 +389,7 @@ var airLines =[
 	["TB", "JAF", "Jetairfly", "Belgium"], 
 	["TC", "ATC", "Air Tanzania", "Tanzania"], 
 	["TD", "LUR", "Atlantis European Airways", "Armenia"],
-	["TF", "SCW", "Malmo Aviation", "Sweden"], Scanwing
+	["TF", "SCW", "Malmo Aviation", "Sweden"], 
 	["TG", "THA", "Thai Airways International", "Thailand"], 
 	["TH", "TSE", "Transmile Air Services", "Malaysia"], 
 	["TI", "TOL", "TolAir Services", "Puerto Rico"], 
@@ -775,7 +775,7 @@ var airLines =[
 	["BZ", "BDA", "Blue Dart Aviation", "India"], 
 	["BZ", "KEE", "Keystone Air Service", "Canada"], 
 	["C2", "CEL", "CEIBA Intercontinental", "Equatorial Guinea"], 
-	["C4", "IMX", "Zimex Aviation", "Switzerland"], Z
+	["C4", "IMX", "Zimex Aviation", "Switzerland"], 
 	["C5", "UCA", "Commutair", "USA"], 
 	["C6", "CJA", "CanJet", "Canada"], 
 	["C7", "CIN", "Cinnamon Air", "Sri Lanka"], 

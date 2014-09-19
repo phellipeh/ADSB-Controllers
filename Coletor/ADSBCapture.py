@@ -8,7 +8,8 @@ import json
 #Inicia Serial
 try:
     s_com = serial.Serial("COM9", 115200, parity=serial.PARITY_NONE, stopbits=1, bytesize=8, xonxoff=False, rtscts=False, dsrdtr=False)
-except:
+except Exception as ex:
+    print ex
     print "Nao Foi Possivel conectar-se ao Receptor..."
     sys.exit(0)
 

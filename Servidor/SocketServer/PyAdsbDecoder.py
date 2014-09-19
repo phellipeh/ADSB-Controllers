@@ -1,25 +1,22 @@
 #
 # PyADS-B Decoder in Python
-# Felipe Sousa Rocha, 01/08/2024
+# Felipe Sousa Rocha, 01/08/2014
 #
 
 import math
 import PyAdsbDecoderDatabase
 import PyAdsbDecoderMathAndDataLibrary
 import CRCCalc
+import ServerReport
 
-cs_tbl = ['@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
-	  'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
-	  'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-	  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '1', '2', '3', '4', '5',
-	  '6', '7', '8', '9', ' ', ' ', ' ', ' ', ' ', ' ']
+# Aircraft Type
+cs_tbl = ['@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+          'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', ' ', ' ', ' ', ' ',
+          ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+          '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', ' ', ' ', ' ', ' ', ' ']
 
 def ADSBDataDecoder(data, showStatus = True, dumpOnDatabase = True, latHome = -5.19506, lonHome = -39.28307):
-    
-    if len(data) == 14+1:
-       print "Pacote: 56 Bits"
-       print "Nao implementado."
-    
+
     if len(data) == 28+1:
        print "Pacote 112: Bits"
        if CRCCalc.parity112(data) == False:
@@ -36,41 +33,63 @@ def ADSBDataDecoder(data, showStatus = True, dumpOnDatabase = True, latHome = -5
        b_TC = PyAdsbDecoderMathAndDataLibrary.full_bit_zero(bin(eval(PyAdsbDecoderMathAndDataLibrary.toHex(data[8]+data[9]))))[:5] #Da pra reduzir
        TC = eval("0b"+b_TC)  #Da pra reduzir
        b_Mode = PyAdsbDecoderMathAndDataLibrary.full_bit_zero(bin(eval(PyAdsbDecoderMathAndDataLibrary.toHex(data[8]+data[9]))))[5:] #Tres bits para o mode
-
-       if DF != 17:
-           print 'Downlink Format: ' +str(DF) + ' - Desconhecido'
       
        if DF == 17:
-           print 'Downlink Format: 17'
+           print 'Downlink Format: 17 - S Mode'
            if PyAdsbDecoderDatabase.FindICAOExists(ICAO) == False:
               PyAdsbDecoderDatabase.CreateAirplane(ICAO)
               print "Novo Airplane Criado: " + str(ICAO)
-          
-           if TC >= 8 and TC <= 19:
-               print "Type: Airborne Position message... (Altitude, Latitude e Longitude)"
+
+           if TC >= 1 and TC <= 4:
+               print "Type: Airplane Identification Message... (Nome do Voo, Tipo Aeronave)"
                hex_adsb_packet = data[8:] #Da pra reduzir
                bin_adsb_packet = PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[0],hex_adsb_packet[1])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[2],hex_adsb_packet[3])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[4],hex_adsb_packet[5])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[6],hex_adsb_packet[7])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[8],hex_adsb_packet[9])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[10],hex_adsb_packet[11])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[12],hex_adsb_packet[13])
-               Altitude = "0b" + bin_adsb_packet[8:][:12] #Da pra reduzir
-               Latitude = eval("0b" + bin_adsb_packet[22:][:17]) #Da pra reduzir   
-               Longitude =  eval("0b" + bin_adsb_packet[-17:]) #Da pra reduzir
-               T = bin_adsb_packet[20:][0] #Da pra reduzir
-               F = bin_adsb_packet[21:][0] #Da pra reduzir
-
-               Altitude = Altitude[2:][:12] #Da pra reduzir
-               bits = Altitude[0]+Altitude[1]+Altitude[2]+Altitude[3]+ Altitude[4]+Altitude[5]+Altitude[6]+Altitude[8]+Altitude[9]+Altitude[10]+Altitude[11] #Da pra reduzir
-               oitavo_bit = Altitude[7] #Da pra reduzir
-               Altitude = 25 * eval("0b"+bits) - 1000 #Da pra reduzir
-
-               print "Altitude: " + str(Altitude)
                
-               if F == '0':
-                   print "Even Packet"
-                   PyAdsbDecoderDatabase.UpdateAirplanePosition_T0(ICAO, [Latitude, Longitude, Altitude])
-               elif F == '1':
-                   print "Odd Packet"
-                   PyAdsbDecoderDatabase.UpdateAirplanePosition_T1(ICAO, [Latitude, Longitude, Altitude])
+               formattypecode = bin_adsb_packet[0] + bin_adsb_packet[1] + bin_adsb_packet[2] + bin_adsb_packet[3] + bin_adsb_packet[4] #Da pra reduzir
+               aircrafttype = bin_adsb_packet[5] + bin_adsb_packet[6] + bin_adsb_packet[7] #Da pra reduzir
+               char = "" #Da pra reduzir
+               char = char + cs_tbl[eval("0b"+bin_adsb_packet[8]+bin_adsb_packet[9]+bin_adsb_packet[10]+bin_adsb_packet[11]+bin_adsb_packet[12]+bin_adsb_packet[13])] #1 #Da pra reduzir
+               char = char + cs_tbl[eval("0b"+bin_adsb_packet[14]+bin_adsb_packet[15]+bin_adsb_packet[16]+bin_adsb_packet[17]+bin_adsb_packet[18]+bin_adsb_packet[19])] #2 #Da pra reduzir
+               char = char + cs_tbl[eval("0b"+bin_adsb_packet[20]+bin_adsb_packet[21]+bin_adsb_packet[22]+bin_adsb_packet[23]+bin_adsb_packet[24]+bin_adsb_packet[25])] #3 #Da pra reduzir
+               char = char + cs_tbl[eval("0b"+bin_adsb_packet[26]+bin_adsb_packet[27]+bin_adsb_packet[28]+bin_adsb_packet[29]+bin_adsb_packet[30]+bin_adsb_packet[31])] #4 #Da pra reduzir
+               char = char + cs_tbl[eval("0b"+bin_adsb_packet[32]+bin_adsb_packet[33]+bin_adsb_packet[34]+bin_adsb_packet[35]+bin_adsb_packet[36]+bin_adsb_packet[37])] #5 #Da pra reduzir
+               char = char + cs_tbl[eval("0b"+bin_adsb_packet[38]+bin_adsb_packet[39]+bin_adsb_packet[40]+bin_adsb_packet[41]+bin_adsb_packet[42]+bin_adsb_packet[43])] #6 #Da pra reduzir
+               char = char + cs_tbl[eval("0b"+bin_adsb_packet[44]+bin_adsb_packet[45]+bin_adsb_packet[46]+bin_adsb_packet[47]+bin_adsb_packet[48]+bin_adsb_packet[49])] #7 #Da pra reduzir
+               char = char + cs_tbl[eval("0b"+bin_adsb_packet[50]+bin_adsb_packet[51]+bin_adsb_packet[52]+bin_adsb_packet[53]+bin_adsb_packet[54]+bin_adsb_packet[55])] #8 #Da pra reduzir
+               PyAdsbDecoderDatabase.UpdateAirplaneID(ICAO, char)
 
-               if PyAdsbDecoderDatabase.VerifyAllPositionDataExists(ICAO) == True: #verifica exitencia dos dois dados e calcula rota
+               hex_adsb_packet_aircraft_type = data[:5]
+               hex_adsb_packet_aircraft_category = data[6]+data[7]+data[8]
+               formatCode = eval(bin(eval("0b" + hex_adsb_packet_aircraft_type)))
+               aircraftCategory = eval(bin(eval("0b" + hex_adsb_packet_aircraft_category)))
+               type_ = formatTypeCode[formatCode][0]
+               #formatCode][1][aircraftCategory
+               #print category
+       
+           if TC >= 9 and TC <= 18: 
+              print "Type: Airborne Position message... (Altitude, Latitude e Longitude) - Altitude Barometrica"
+              hex_adsb_packet = data[8:] #Da pra reduzir
+              bin_adsb_packet = PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[0],hex_adsb_packet[1])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[2],hex_adsb_packet[3])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[4],hex_adsb_packet[5])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[6],hex_adsb_packet[7])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[8],hex_adsb_packet[9])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[10],hex_adsb_packet[11])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[12],hex_adsb_packet[13])
+              Altitude = "0b" + bin_adsb_packet[8:][:12] #Da pra reduzir
+              Latitude = eval("0b" + bin_adsb_packet[22:][:17]) #Da pra reduzir   
+              Longitude =  eval("0b" + bin_adsb_packet[-17:]) #Da pra reduzir
+              T = bin_adsb_packet[20:][0] #Da pra reduzir
+              F = bin_adsb_packet[21:][0] #Da pra reduzir
+
+              Altitude = Altitude[2:][:12] #Da pra reduzir
+              bits = Altitude[0]+Altitude[1]+Altitude[2]+Altitude[3]+ Altitude[4]+Altitude[5]+Altitude[6]+Altitude[8]+Altitude[9]+Altitude[10]+Altitude[11] #Da pra reduzir
+              oitavo_bit = Altitude[7] #Da pra reduzir
+              Altitude = 25 * eval("0b"+bits) - 1000 #Da pra reduzir
+              print "Altitude: " + str(Altitude)
+               
+              if F == '0':
+                 print "Even Packet"
+                 PyAdsbDecoderDatabase.UpdateAirplanePosition_T0(ICAO, [Latitude, Longitude, Altitude])
+              elif F == '1':
+                 print "Odd Packet"
+                 PyAdsbDecoderDatabase.UpdateAirplanePosition_T1(ICAO, [Latitude, Longitude, Altitude])
+
+              if PyAdsbDecoderDatabase.VerifyAllPositionDataExists(ICAO) == True: #verifica exitencia dos dois dados e calcula rota
                    Airplanes1, Airplanes2, Airplanes3, Airplanes4 = PyAdsbDecoderDatabase.GetPositionData(ICAO)
                    Airplanes1 = int(Airplanes1)
                    Airplanes2 = int(Airplanes2)
@@ -140,41 +159,19 @@ def ADSBDataDecoder(data, showStatus = True, dumpOnDatabase = True, latHome = -5
                         
                        PyAdsbDecoderDatabase.RealTimeFullAirplaneFeed(Data)
                        print "Informacao atualizada!"
-                           
-       if TC >= 1 and TC <= 4:
-               print "Type: Airplane Identification Message... (Nome do Voo)"
-               hex_adsb_packet = data[8:] #Da pra reduzir
-               bin_adsb_packet = PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[0],hex_adsb_packet[1])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[2],hex_adsb_packet[3])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[4],hex_adsb_packet[5])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[6],hex_adsb_packet[7])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[8],hex_adsb_packet[9])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[10],hex_adsb_packet[11])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[12],hex_adsb_packet[13])
-               
-               formattypecode = bin_adsb_packet[0] + bin_adsb_packet[1] + bin_adsb_packet[2] + bin_adsb_packet[3] + bin_adsb_packet[4] #Da pra reduzir
-               aircrafttype = bin_adsb_packet[5] + bin_adsb_packet[6] + bin_adsb_packet[7] #Da pra reduzir
-               char = "" #Da pra reduzir
-               char = char + cs_tbl[eval("0b"+bin_adsb_packet[8]+bin_adsb_packet[9]+bin_adsb_packet[10]+bin_adsb_packet[11]+bin_adsb_packet[12]+bin_adsb_packet[13])] #1 #Da pra reduzir
-               char = char + cs_tbl[eval("0b"+bin_adsb_packet[14]+bin_adsb_packet[15]+bin_adsb_packet[16]+bin_adsb_packet[17]+bin_adsb_packet[18]+bin_adsb_packet[19])] #2 #Da pra reduzir
-               char = char + cs_tbl[eval("0b"+bin_adsb_packet[20]+bin_adsb_packet[21]+bin_adsb_packet[22]+bin_adsb_packet[23]+bin_adsb_packet[24]+bin_adsb_packet[25])] #3 #Da pra reduzir
-               char = char + cs_tbl[eval("0b"+bin_adsb_packet[26]+bin_adsb_packet[27]+bin_adsb_packet[28]+bin_adsb_packet[29]+bin_adsb_packet[30]+bin_adsb_packet[31])] #4 #Da pra reduzir
-               char = char + cs_tbl[eval("0b"+bin_adsb_packet[32]+bin_adsb_packet[33]+bin_adsb_packet[34]+bin_adsb_packet[35]+bin_adsb_packet[36]+bin_adsb_packet[37])] #5 #Da pra reduzir
-               char = char + cs_tbl[eval("0b"+bin_adsb_packet[38]+bin_adsb_packet[39]+bin_adsb_packet[40]+bin_adsb_packet[41]+bin_adsb_packet[42]+bin_adsb_packet[43])] #6 #Da pra reduzir
-               char = char + cs_tbl[eval("0b"+bin_adsb_packet[44]+bin_adsb_packet[45]+bin_adsb_packet[46]+bin_adsb_packet[47]+bin_adsb_packet[48]+bin_adsb_packet[49])] #7 #Da pra reduzir
-               char = char + cs_tbl[eval("0b"+bin_adsb_packet[50]+bin_adsb_packet[51]+bin_adsb_packet[52]+bin_adsb_packet[53]+bin_adsb_packet[54]+bin_adsb_packet[55])] #8 #Da pra reduzir
-               PyAdsbDecoderDatabase.UpdateAirplaneID(ICAO, char)
-               
-       if TC >= 5 and TC <= 9:
-               print 'Pacote de 5 a 9 - Ground Position'
-               print 'Nao implementado.'
-
-       if TC >= 8 and TC <= 19:
+                                          
+           if TC == 19:
                print "Type: Airborne Velocity Message... (Ground Speed, Track, Vertical)"
                hex_adsb_packet = data[8:] #Da pra reduzir
                hex_adsb_packet = hex_adsb_packet[:14] #Da pra reduzir
                bin_adsb_packet = PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[0],hex_adsb_packet[1])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[2],hex_adsb_packet[3])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[4],hex_adsb_packet[5])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[6],hex_adsb_packet[7])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[8],hex_adsb_packet[9])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[10],hex_adsb_packet[11])+PyAdsbDecoderMathAndDataLibrary.c(hex_adsb_packet[12],hex_adsb_packet[13]) #Da pra reduzir
                subtype = eval("0b"+bin_adsb_packet[5] + bin_adsb_packet[6] + bin_adsb_packet[7]) #Da pra reduzir
 
-               #if subtype != 1:
-                  #print "Velocidade: Supersonica... Corre cumpadi"
+               if subtype == 0:
+                  print "Velocidade: Supersonica... Corre cumpadi"
                 
-               if subtype != 0: #== 1: # Velocidade (de Ground) nao supersonica
-                  #print "Velocidade: Nao-Supersonica"
+               if subtype == 1: # Velocidade (de Ground) nao supersonica
+                  print "Velocidade: Nao-Supersonica"
                   directionBitEastWest = bin_adsb_packet[13]
                   directionBitNorthSouth = bin_adsb_packet[24]
 
@@ -184,7 +181,6 @@ def ADSBDataDecoder(data, showStatus = True, dumpOnDatabase = True, latHome = -5
                   gnd_spd = math.floor(math.sqrt(numEastWest * numEastWest + numNorthSouth * numNorthSouth))
             
                   if (numEastWest == 0) and (numNorthSouth == 0):
-                     print "Duplo Zero"
                      return False
                   else:
                       print "directionBitEastWest " + str(directionBitEastWest)
@@ -222,21 +218,17 @@ def ADSBDataDecoder(data, showStatus = True, dumpOnDatabase = True, latHome = -5
                          else:
                             trk = 270 + 180./math.pi*math.atan(numNorthSouth / numEastWest)
                             
-                      vr = 0
-                      print trk
                       if (trk - int(math.floor(trk))) < 0.5:
                         trk = int(math.floor(trk))
                       else:
                         trk = int(math.ceil(trk))
                                     
-                      print trk
-                      PyAdsbDecoderDatabase.UpdateAirplaneAngle(ICAO, [gnd_spd, trk, vr])
-
-                #if rawdata[8] & 0x08) == 0:
-                #    vr = 1 * ((((rawdata[9] >> 2) & 0x3f) | (rawdata[8] & 0x07) << 6) - 1) * 64
-                #else:
-                #    vr = (-1) * ((((rawdata[9] >> 2) & 0x3f) | (rawdata[8] & 0x07) << 6) - 1) * 64
-                  
+                      PyAdsbDecoderDatabase.UpdateAirplaneAngle(ICAO, [gnd_spd, trk, 0])
+                
+           else:
+               print 'Downlink Format: ' +str(DF) + ' - Desconhecido'
+               ServerReport.report('PyAdsbDecoderDataBase', '1', 'Downlink Format: ' +str(DF) + ' - Desconhecido - '+ data)
 
     else:
         print 'Tamanho de invalido do pacote...'
+        ServerReport.report('PyAdsbDecoderDataBase', '1', 'Tamanho de invalido do pacote - '+ data)

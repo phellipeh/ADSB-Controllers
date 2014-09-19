@@ -43,6 +43,25 @@ def b56_crc(adsb_payload_4_bytes):
     result = result ^ data
     return result >> 8
 
+def parity56(frame):
+   '''
+        type  icao       alt   CRC
+        5F   E4,82,C6   C0,66  CF
+   '''
+   adsb_msg = [
+               eval("0x"+frame[0]+frame[1]),   eval("0x"+frame[2]+frame[3]),   eval("0x"+frame[4]+frame[5]), 
+               eval("0x"+frame[6]+frame[7]),   eval("0x"+frame[8]+frame[9]+frame[10]+frame[11]+frame[12]+frame[13])
+              ]
+   
+   #[0x5d, 0xa5, 0xdb, 0x4e, 0xf5f740]
+
+   res = b56_crc(adsb_msg[0:6])
+   ver = adsb_msg[6]
+   if res != ver:
+     return False
+   else:
+     return True
+    
 def parity112(frame):
     
    adsb_msg = [
@@ -58,4 +77,7 @@ def parity112(frame):
      return False
    else:
      return True
+
+
+
 

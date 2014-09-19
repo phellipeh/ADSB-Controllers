@@ -9,7 +9,13 @@ class ADSBDataEcho(WebSocket):
                         self.sendMessage("get_return:"+str(httpServerDatabase.GetRealtimeAirplaneList()))
                 except Exception as ex:
                         print "Exception: " + str(ex)
-                
+
+            elif self.data == 'GETAirports':
+                try:
+                        self.sendMessage("return_airport:"+str(httpServerDatabase.GetListAirports()))
+                except Exception as ex:
+                        print "Exception: " + str(ex)
+
             elif 'getroute(' in self.data:
                 icao = self.data.replace("getroute(","")
                 icao = icao.replace(")","")

@@ -44,17 +44,25 @@ def TryConnect(): #Conecta ao Servidor
                     client_socket.send(senddata)
                     LimpaHex(lastid)
                 except Exception as ex:
-                    print "2"
-                    print ex
-                    TryConnect()
+                    if "no such table:" not in str(ex):
+                        print "2"
+                        print ex
+                        TryConnect()
             else:
                 print "Nenhum dado no momento - No aguardo."
             time.sleep(0.5)
     except Exception as ex:
-        print ex
-        print "Nao foi possivel conectar-se ao servidor... Tentando novamente em 5seg..."
-        time.sleep(5)
-        TryConnect()
+        if "no such table:" in str(ex):
+            print "Erro no DB: "+str(ex)
+            print "Conexao Encerrada"
+            client_socket.close()
+        else:
+            print ex
+            print "Nao foi possivel conectar-se ao servidor... Tentando novamente em 5seg..."
+            time.sleep(5)
+            client_socket.close()
+            TryConnect()
+        
 
 print "Iniciando Evnvio de Dados - Aguardando Conexao."
 TryConnect()
