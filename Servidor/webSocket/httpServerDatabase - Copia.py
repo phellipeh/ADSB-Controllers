@@ -21,9 +21,9 @@ def findArray(zi):
     return False
 
 def GetRealtimeAirplaneList():
-    ts = int(time.time()) - 60
+    ts = int(time.time()) - 6000
     cur2.execute("SELECT * FROM HexDataBase WHERE timestamp >= "+str(ts)+" ORDER BY timestamp DESC")
-    #cur2.execute("SELECT * FROM HexDataBase ORDER BY timestamp DESC")
+    #cur2.execute("SELECT * FROM HexDataBase ORDER BY timestamp ASC")
     columns = (
      'id_reg', 'timestamp', 'hex', 'icao', 'id', 'latitude', 'longitude', 'altitude', 'climb', 'head', 'velocidadegnd', 'utf' 
     )
@@ -32,17 +32,18 @@ def GetRealtimeAirplaneList():
         if findArray(row[2]) == False:
             results.append(row)
             hexIcao.append(row[2])
-    
+
     s = []
     for resultz in results:
         s.append(dict(zip(columns, resultz)))
-    del results[:]
-    del hexIcao[:]
-    resultz = []    
-    return json.dumps(s, indent=2)
+        print json.dumps(s, indent=2)
+
+GetRealtimeAirplaneList()
+print "exe"
+
 
 def GetAirplaneTrack(planehex):
-    cur2.execute("SELECT * FROM HexDataBase WHERE hexicao = '"+str(planehex)+"' ORDER BY timestamp DESC")
+    cur2.execute("SELECT * FROM HexDataBase WHERE hexicao = '"+str(planehex)+"' ORDER BY timestamp")
 
     columns = (
      'id_reg', 'timestamp', 'hex', 'icao', 'id', 'latitude', 'longitude', 'altitude', 'climb', 'head', 'velocidadegnd', 'utf'

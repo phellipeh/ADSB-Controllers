@@ -13,10 +13,11 @@
 		<script src="js/jquery.sidr.min.js"></script>
 		<script src="js/jquery-ui.js"></script>
 		<script src="js/ohsnap.js"></script>
-		<script src="js/index.js"></script>
+		<script src="js/flights.js"></script>
+		<script src="js/index.js"></script>	
 		<script src="js/airlinenames.js"></script>		
 		<script src="js/dicas.js"></script>		
-		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCTUlfoWBH9ui963vODx-5kad85gRhSFaw&sensor=false"></script>
+		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCTUlfoWBH9ui963vODx-5kad85gRhSFaw&sensor=false&libraries=places,drawing,geometry"></script>
 		<title>Radar Livre</title>
 		<noscript>
 			<h3>Para o funcionamento do Radar Livre você deve ter o JavaScript ativado no seu Dispositivo...</h3>
@@ -58,6 +59,14 @@
 				<div class="tableElement">
 					Linha Aérea: <span id="linha" class="info"></span>
 				</div>
+				
+				<div class="tableElement">
+					Origem: <span id="origem" class="info">-</span>
+				</div>
+				<div class="tableElement">
+					Destino: <span id="destino" class="info">-</span>
+				</div>
+				
 				<div class="tableElement">
 					Latitude: <span id="latitude" class="info"></span>
 				</div>
@@ -92,6 +101,6 @@
 				<p class="exceptionMessage"></p>
 			</div>
 		</div>
-		<div id="mapa" style="width:100%; height:97%"></div>
+		<div id="mapa"></div>
 	</body>
 </html>

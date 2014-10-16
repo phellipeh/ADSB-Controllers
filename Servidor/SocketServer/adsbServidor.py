@@ -7,15 +7,14 @@ import PyAdsbDecoderDatabase
 import time
 import json
 import ServerReport
+import signal
 
 if __name__ == "__main__":
-      
+
     CONNECTION_LIST = []
     RECV_BUFFER = 4096 
     PORT = 5000
-         
-    #server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
     try:
         server_socket = socket()
         server_socket.bind(("localhost", PORT))
@@ -36,15 +35,27 @@ if __name__ == "__main__":
                 try:
                     data = sock.recv(RECV_BUFFER)
                     if data:
-                        PyAdsbDecoderDatabase.DumpColetores(data)
-                        dp = json.loads(data)
-                        print dp
-                        
-                        if dp[3] == 'ADSBHEXDATA':
-                            dp2 = json.loads(dp[0])
-                            for z in dp2:
-                                print "adsbpack"+z[0]
-                                PyAdsbDecoder.ADSBDataDecoder(z[0])
+                        try:
+                            if 'Online: ' not in data:
+                                #PyAdsbDecoderDatabase.DumpColetores(data)
+                                dp = json.loads(data)
+                                print data
+                            
+                                if dp[3] == 'ADSBHEXDATA':
+
+                                    # Obter Timestamp Frame vindo do Coletor
+                                    # Obter Lat e Long o Coletor e repassar para o DataDecoder
+                                    
+                                    dp2 = json.loads(dp[0]) #obtem o conteudo do pacote
+                                    for z in dp2:
+                                        PyAdsbDecoder.ADSBDataDecoder(z[0])
+
+                                if dp[3] == 'JSONDATA':
+                                    print "Nao implementado"
+                                        
+                        except Exception as ex:
+                            print ex
+                            
                 except:
                     print "Client (%s, %s) is offline" % addr
                     ServerReport.report('adsbServidor', '2', 'Queda de Conexao com Coletor - '+str(addr))

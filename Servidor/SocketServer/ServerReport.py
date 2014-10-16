@@ -10,5 +10,5 @@ from datetime import datetime
 def report(modulo, tipo, msg):
   f = file('report.log', 'a')
   now = datetime.now()
-  f.write(now + " - "+modulo+" - "+tipo+" - "+msg)
+  f.write(str(now) + " - "+modulo+" - "+tipo+" - "+msg+"\n")
   f.close()

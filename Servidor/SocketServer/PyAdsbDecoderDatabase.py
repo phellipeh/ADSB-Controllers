@@ -4,6 +4,8 @@ import datetime
 import sys
 import time
 import ServerReport
+import json
+import winsound
 
 #ID, TIMESTAMP, ICAO, CALLSING, LAT, LON, ALT, INCLINACAO, ORIENTACAO, VELOCIDADE_GND, UTF, 
 #ID, TIMESTAMP, ICAO, CALLSING, LAT0, LON0, LAT1, LON1, ALT, INCLINACAO, ORIENTACAO, VELOCIDADE_GND, UTF
@@ -31,6 +33,9 @@ except Exception as ex:
     sys.exit(0)
 
 def CreateAirplane(ICAO):
+    Freq = 2500 # Set Frequency To 2500 Hertz
+    Dur = 1000 # Set Duration To 1000 ms == 1 second
+    winsound.Beep(Freq,Dur)
     ts = int(time.time())
     cur2.execute("INSERT INTO LoadedHexDump (timestamp, hexicao, icao, callsign, lat0, lon0, lat1, lon1, alt, climb, head, velocidadegnd, utf) VALUES('"+str(ts)+"', '"+ICAO+"', 'NULL', 'NULL', '0', '0', '0', '0', '0', '0', '0', '0', 'NULL')")
     con2.commit()   
@@ -106,6 +111,7 @@ def RealTimeFullAirplaneFeed(Data):
     ts = int(time.time())
     cur.execute("INSERT INTO HexDataBase (timestamp, hexicao, icao, callsign, lat, lon, alt, climb, head, velocidadegnd, utf) VALUES ('"+str(ts)+"', '"+Data[0]+"', 'NULL', '"+Data[1]+"', '"+str(Data[2])+"', '"+str(Data[3])+"', '"+str(Data[4])+"', '"+str(Data[5])+"', '"+str(Data[6])+"', '"+str(Data[7])+"', '"+str(Data[8])+"')")
     con.commit()
+    
 #
 # Log das informacoes
 #
@@ -126,7 +132,8 @@ except Exception as ex:
     ServerReport.report('PyAdsbDecoderDataBase', '0', str(ex))
     sys.exit(0)
 
-def DumpColetores(Data):
+def DumpColetores(Data_):
     ts = int(time.time())
-    cur.execute("INSERT INTO ColetorDataRegistred (IDColetor, Format, Data, Timestamp) VALUES ('"+Data[0]+"', '"+Data[1]+"', '"+Data[2]+"' ,'"+str(ts)+"')")
+    Data = json.loads(Data_)
+    cur.execute("INSERT INTO ColetorDataRegistred (IDColetor, Format, Data, Timestamp) VALUES ('"+str(Data[0])+"', '"+str(Data[1])+"', '"+str(Data[2])+"' ,'"+str(ts)+"')")
     con.commit()

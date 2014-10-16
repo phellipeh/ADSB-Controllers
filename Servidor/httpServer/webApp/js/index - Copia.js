@@ -53,11 +53,6 @@ $(document).ready(function(){
 		error = true;
 	}
 	
-	$(document).keyup(function(e) {
-		var timer2 = setInterval(function(){GetAllRoutes();}, 1000);
-		console.log("ATIVADO");
-	});
-	
 	websocket.onerror = function(event) { 
 		error = true;
 		if(mapShow == false){
@@ -69,15 +64,9 @@ $(document).ready(function(){
 	websocket.onmessage = function(event) { onMessage(event); };
 });
 
-function AtualizarRota(){
-	websocket.send("getroute("+AiPlaneSelected+")");
-	console.log("Chamando Rota:" +AiPlaneSelected);
-}
 
-function GetAllRoutes(){
-		$.each(voos, function (key, val){
-			AtualizarRota(val.hex);
-		});
+function AtualizarRota(){
+	//websocket.send("getroute("+aeronave.hex+")");
 }
 
 function myTimer() {
@@ -85,17 +74,12 @@ function myTimer() {
 	if(getAirPlaneRouteRealTime)
 		AtualizarRota();
 
-	/*$.each(voos, function (key, val){
-		try {
-			if(val.timestamp < ($.now() - 60)){
-				console.log(val.timestamp);
-				val.setMap(null);
-				voos.remove(val);
-			}
-		}catch(err) {
-			console.log(err);
+	$.each(voos, function (key, val){
+		if(toTimestamp(val.hora) < ($.now() - 60)){
+			val.setMap(null);
+			voos.remove(val);
 		}
-	});*/
+	});
 	
 	if(mapShow == false && error == false){
 		$('.progress-bar').css( "width", "100%" );
@@ -141,10 +125,6 @@ function onMessage(event){
 	if(returndata.search("getroute_return:") != -1){
 		returndata = returndata.replace("getroute_return:", "");
 		var rota = JSON.parse(returndata);
-		
-		flightPlanCoordinates = [];
-		//flightPath.setMap(null);
-		
 		$.each(rota, function (key, val){
 			flightPlanCoordinates.push([val.latitude, val.longitude]);
 		});
@@ -164,11 +144,13 @@ function onMessage(event){
 			strokeWeight: 1.5
 		});
 
-		flightPath.setMap(null);
 		flightPath.setMap(map); 
 		flightPlanCoordinatesZ = [];
 		flightPlanCoordinates = [];
-		flightPath = [];		
+		flightPath = [];
+		
+		
+		
 	}
 	
 	if(returndata.search("search_return:") != -1){
@@ -333,9 +315,9 @@ function inicializarMapa() {
 	  }
 	});
 
-	google.maps.event.addListener(map, 'click', function() {
-		getAirPlaneRouteRealTime = false;
-	});
+	
+	//getAirPlaneRouteRealTime = true;
+	
 }
 
 function MoveCameraTo(lat, lon){
@@ -344,6 +326,7 @@ function MoveCameraTo(lat, lon){
 }
 
 /* Funções de voos */
+
 function jaExiste(aeronave){
 	var aux = 0;
 	$.each(voos, function (key, val){
@@ -440,6 +423,7 @@ function atualizarMarcador(aeronave){
 					var d = identifyFlightInformations(aeronave.id);
 					if(!d[0]){
 						var d = ['-', '-'];
+						
 					};
 					$("#origem").text(d[0]);
 					$("#destino").text(d[1]);

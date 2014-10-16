@@ -13,6 +13,7 @@ class ADSBDataEcho(WebSocket):
             elif self.data == 'GETAirports':
                 try:
                         self.sendMessage("return_airport:"+str(httpServerDatabase.GetListAirports()))
+                        #self.sendMessage("return_airport:")
                 except Exception as ex:
                         print "Exception: " + str(ex)
 

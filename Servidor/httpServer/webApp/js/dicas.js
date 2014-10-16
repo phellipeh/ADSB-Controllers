@@ -1,5 +1,6 @@
 var tip = ["Você pode visualizar aeroportos de uma determinada <br> área dando zoom em sua direção.", 
-		   "Você poderá ver informações sobre a aeronave,<br> rota e voo clicando nos icones dos aviões."];
+		   "Você poderá ver informações sobre a aeronave,<br> rota e voo clicando nos icones dos aviões.",
+		   "Quando Você Clicar em um avião ele"];
 
 var t = 0;
 function tipRemove(){
@@ -17,4 +18,5 @@ function nextTip(){
 function startTips(){
 	var tipTime = setTimeout("nextTip()", 4000);
 	var tipTime2 = setTimeout("nextTip()", 10000);
+	//var tipTime2 = setTimeout("nextTip()", 16000);
 }

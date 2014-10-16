@@ -4,10 +4,11 @@ import datetime
 import time
 import serial
 import json
+import signal
 
 #Inicia Serial
 try:
-    s_com = serial.Serial("COM9", 115200, parity=serial.PARITY_NONE, stopbits=1, bytesize=8, xonxoff=False, rtscts=False, dsrdtr=False)
+    s_com = serial.Serial("COM4", 115200, parity=serial.PARITY_NONE, stopbits=1, bytesize=8, xonxoff=False, rtscts=False, dsrdtr=False)
 except Exception as ex:
     print ex
     print "Nao Foi Possivel conectar-se ao Receptor..."
@@ -31,6 +32,12 @@ def SalvaHex(HexData):
     ts = time.time()
     cur.execute("INSERT INTO HexDataBase (Hex, DateTime) VALUES('"+HexData+"', '"+str(ts)+"')")
     con.commit()
+
+def handler(signum, frame):
+    serial.close()
+
+signal.signal(signal.SIGINT, handler)
+
 
 print("Obtendo Versao do Receptor...")
 s_com.write("#00\r\n")

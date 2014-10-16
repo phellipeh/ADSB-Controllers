@@ -1,6 +1,7 @@
-var airLines =[
+﻿var airLines =[
 	["AD", "AZU", "Azul Linhas Aereas" ,"Brazil"],
 	["G3", "GLO", "GOL Transportes Aereos" ,"Brazil"],
+	["??", "GOL", "GOL Transportes Aereos" ,"Brazil"],
 	["JJ", "TAM", "TAM Linhas Aereas" ,"Brazil"],
 	["M3", "TUS", "ABSA Aerolinhas" ,"Brazil"],
 	["O6", "ONE", "Avianca Brazil" ,"Brazil"],
