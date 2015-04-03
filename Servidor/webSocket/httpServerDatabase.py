@@ -4,7 +4,7 @@ import json
 import time
 
 try:
-    con2 = psycopg2.connect(host='localhost', user='postgres', password='root',dbname='Radar')
+    con2 = psycopg2.connect(host='localhost', user='postgres', password='root',dbname='radar')
     cur2 = con2.cursor()
 except Exception as ex:
     print "Nao Foi Possivel conectar-se ao Banco de Dados Local..."

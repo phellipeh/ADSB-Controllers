@@ -5,7 +5,7 @@ import sys
 import time
 import ServerReport
 import json
-import winsound
+#import winsound
 
 #ID, TIMESTAMP, ICAO, CALLSING, LAT, LON, ALT, INCLINACAO, ORIENTACAO, VELOCIDADE_GND, UTF, 
 #ID, TIMESTAMP, ICAO, CALLSING, LAT0, LON0, LAT1, LON1, ALT, INCLINACAO, ORIENTACAO, VELOCIDADE_GND, UTF
@@ -16,7 +16,7 @@ import winsound
 # Temporary DataBase
 #
 try:
-    con2 = psycopg2.connect(host='localhost', user='postgres', password='root',dbname='Radar')
+    con2 = psycopg2.connect(host='localhost', user='postgres', password='root',dbname='radar')
     try:
         cur2 = con2.cursor()
         cur2.execute('CREATE TABLE IF NOT EXISTS LoadedHexDump(id_reg serial primary key, timestamp bigint, hexicao text, icao text, callsign text, lat0 double precision, lon0 double precision, lat1 double precision, lon1 double precision, alt integer, climb integer, head integer, velocidadegnd double precision, utf text);')
@@ -35,7 +35,7 @@ except Exception as ex:
 def CreateAirplane(ICAO):
     Freq = 2500 # Set Frequency To 2500 Hertz
     Dur = 1000 # Set Duration To 1000 ms == 1 second
-    winsound.Beep(Freq,Dur)
+    #winsound.Beep(Freq,Dur)
     ts = int(time.time())
     cur2.execute("INSERT INTO LoadedHexDump (timestamp, hexicao, icao, callsign, lat0, lon0, lat1, lon1, alt, climb, head, velocidadegnd, utf) VALUES('"+str(ts)+"', '"+ICAO+"', 'NULL', 'NULL', '0', '0', '0', '0', '0', '0', '0', '0', 'NULL')")
     con2.commit()   
@@ -87,11 +87,11 @@ def FindICAOExists(ICAO):
 #id, timestamp, hexicao, icao, callsign, lat, lon, alt, climb, head, velocidadegnd, utf
 
 try:
-    con = psycopg2.connect(host='localhost', user='postgres', password='root',dbname='Radar')
+    con = psycopg2.connect(host='localhost', user='postgres', password='root',dbname='radar')
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS HexDataBase (id_reg serial primary key, timestamp bigint, hexicao TEXT, icao text, callsign TEXT, lat double precision, lon double precision, alt integer, climb integer, head integer, velocidadegnd double precision, utf text);")
     con.commit()
-except:
+except Exception as ex:
     print "Nao Foi Possivel conectar-se ao Banco de Dados Local..."
     ServerReport.report('PyAdsbDecoderDataBase', '0', str(ex))
     sys.exit(0)
@@ -117,7 +117,7 @@ def RealTimeFullAirplaneFeed(Data):
 #
 
 try:
-    con2 = psycopg2.connect(host='localhost', user='postgres', password='root',dbname='Radar')
+    con2 = psycopg2.connect(host='localhost', user='postgres', password='root',dbname='radar')
     try:
         cur2 = con2.cursor()
         cur2.execute("CREATE TABLE IF NOT EXISTS ColetorDataRegistred (IDColetor TEXT, Format TEXT, Data TEXT, Timestamp bigint);")
